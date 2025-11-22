@@ -3,7 +3,7 @@ import { Panel } from "./components/Panel";
 
 function App() {
   return (
-    <div className="flex h-screen w-screen bg-gray-100">
+    <div className="flex h-screen w-screen bg-white">
       <Canvas />
       <Panel />
     </div>
