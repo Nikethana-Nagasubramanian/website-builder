@@ -54,20 +54,41 @@ export function FeatureCardBlockEditor({ block }: { block: any }) {
           <span id="feature-description-description" className="sr-only">Enter the feature card description</span>
         </div>
   
+
         <div>
-          <label htmlFor="feature-image-url-input" className="block text-sm font-medium text-gray-700 mb-2">
-            Image URL
+          <label htmlFor="feature-link-text-input" className="block text-sm font-medium text-gray-700 mb-2">
+            Link Text
           </label>
           <input
-            id="feature-image-url-input"
+            id="feature-link-text-input"
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-2"
-            value={block.props.imageUrl || ""}
-            onChange={(e) => updateBlock(block.id, { imageUrl: e.target.value })}
-            placeholder="Enter image URL..."
-            aria-describedby="feature-image-url-description"
+            value={block.props.linkText || "Learn more"}
+            onChange={(e) => updateBlock(block.id, { linkText: e.target.value })}
+            placeholder="'Learn more' or 'Read more'"
+            aria-describedby="feature-link-text-description"
           />
-          <span id="feature-image-url-description" className="sr-only">Enter a URL for the feature card image</span>
-          <div className="text-xs text-gray-500 mb-2" aria-hidden="true">or</div>
+          <span id="feature-link-text-description" className="sr-only">Enter the text for the feature card link</span>
+        </div>
+
+        <div>
+          <label htmlFor="feature-link-url-input" className="block text-sm font-medium text-gray-700 mb-2">
+            Link URL
+          </label>
+          <input
+            id="feature-link-url-input"
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-2"
+            value={block.props.linkUrl || "www.google.com"}
+            onChange={(e) => updateBlock(block.id, { linkUrl: e.target.value })}
+            placeholder="Enter link URL..."
+            aria-describedby="feature-link-url-description"
+          />
+          <span id="feature-link-url-description" className="sr-only">Enter a URL for the feature card link</span>
+        </div>
+
+        <div>
+          <label htmlFor="feature-image-url-input" className="block text-sm font-medium text-gray-700 mb-2">
+            Image Upload
+          </label>
           <label htmlFor="feature-image-upload" className="block">
             <span className="sr-only">Upload image</span>
             <input
@@ -84,7 +105,7 @@ export function FeatureCardBlockEditor({ block }: { block: any }) {
         <div className="pt-4 border-t border-gray-200">
           <button
             onClick={handleDelete}
-            className="w-full bg-red-50 hover:bg-red-100 text-red-700 border border-red-300 rounded-lg px-4 py-2 font-medium transition-colors"
+            className="w-full bg-red-500 hover:bg-red-600 text-white rounded-lg px-4 py-2 font-medium transition-colors"
             aria-label="Delete feature card"
           >
             Delete Feature Card

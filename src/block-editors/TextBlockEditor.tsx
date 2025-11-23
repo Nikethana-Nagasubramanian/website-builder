@@ -67,7 +67,7 @@ export function TextBlockEditor({ block }: { block: any }) {
       <div className="pt-4 border-t border-gray-200">
         <button
           onClick={handleDelete}
-          className="w-full bg-red-50 hover:bg-red-100 text-red-700 border border-red-300 rounded-lg px-4 py-2 font-medium transition-colors"
+          className="w-full bg-red-500 hover:bg-red-600 text-white rounded-lg px-4 py-2 font-medium transition-colors"
           aria-label="Delete text block"
         >
           Delete Text Block

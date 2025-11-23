@@ -5,7 +5,7 @@ export function Canvas() {
   const { page, selectBlock, selectedId } = usePageStore(); 
 
   return (
-    <div className="flex-1 p-6 bg-white" role="main" aria-label="Canvas area">
+    <div className="flex-1 overflow-y-auto" role="main" aria-label="Canvas area">
       {page.length === 0 ? (
         <div className="text-center py-12 text-gray-500" aria-live="polite">
           <p>No blocks added yet. Use the sidebar to add blocks.</p>
@@ -28,11 +28,7 @@ export function Canvas() {
                     selectBlock(block.id);
                   }
                 }}
-                className={`mb-4 flex justify-center items-center ${
-                  block.id === selectedId 
-                    ? "ring-2 ring-blue-500 ring-offset-2" 
-                    : ""
-                }`}
+                className={`mb-4 ${block.id === selectedId ? "ring-2 ring-blue-500 ring-offset-2" : ""}`}
               >
                 <Comp {...block.props} />
               </div>

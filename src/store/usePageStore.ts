@@ -30,14 +30,18 @@ export const usePageStore = create<PageState>((set) => ({
           position: "VP of Engineering",
         },
         featureCard: {
-          title: "Feature Title",
-          description: "Feature description goes here...",
+          title: "Brand Compliance & QA",
+          description: "Enforce brand, SEO, and accessibility standards across every page, then automatically flag and fix issues so teams maintain consistent, high-quality experiences at scale",
           imageUrl: "https://via.placeholder.com/256x192",
         },
         heroSection: {
           title: "Welcome to our website",
           description: "This is a description of our website",
           bgImage: "https://via.placeholder.com/1920x1080",
+          textColor: "text-white",
+          padding: "8",
+          spacing: "4",
+          textAlign: "center",
         }
       }
 
