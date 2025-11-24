@@ -1,78 +1,45 @@
 import { usePageStore } from "../store/usePageStore";
+import { TextField } from "../components/editor-fields/TextField";
+import { ActionButton } from "../components/editor-fields/ActionButton";
 
-export function TextBlockEditor({ block }: { block: any }) {
+export function TestimonialSectionEditor({ block }: { block: any }) {
   const updateBlock = usePageStore((s) => s.updateBlock);
-  const deleteBlock = usePageStore((s) => s.deleteBlock);
-  const selectBlock = usePageStore((s) => s.selectBlock);
-
-  const handleDelete = () => {
-    deleteBlock(block.id);
-    selectBlock(null);
-  };
 
   return (
     <div className="space-y-4">
-      <div>
-        <label htmlFor="text-content-input" className="block text-sm font-medium text-gray-700 mb-2">
-          Text Content
-        </label>
-        <textarea
+        <TextField
           id="text-content-input"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-          rows={4}
-          value={block.props.text}
-          onChange={(e) => updateBlock(block.id, { text: e.target.value })}
-          aria-describedby="text-content-description"
+          label="Text Content"
+          value={block.props.text || ""}
+          onChange={(value) => updateBlock(block.id, { text: value })}
+          placeholder="Enter testimonial text content..."
+          description="Enter the testimonial text content"
         />
-        <span id="text-content-description" className="sr-only">Enter the testimonial text content</span>
-      </div>
-      <div>
-        <label htmlFor="customer-name-input" className="block text-sm font-medium text-gray-700 mb-2">
-          Customer Name
-        </label>
-        <input
+        <TextField
           id="customer-name-input"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          label="Customer Name"
           value={block.props.customerName || ""}
-          onChange={(e) => updateBlock(block.id, { customerName: e.target.value })}
-          placeholder="Customer name..."
-          aria-describedby="customer-name-description"
+          onChange={(value) => updateBlock(block.id, { customerName: value })}
+          placeholder="Enter customer name..."
+          description="Enter the customer's name for the testimonial"
         />
-        <span id="customer-name-description" className="sr-only">Enter the customer's name for the testimonial</span>
-      </div>
-
-      <div>
-        <label htmlFor="company-input" className="block text-sm font-medium text-gray-700 mb-2">
-          Company & Position
-        </label>
-        <input
+        <TextField
           id="company-input"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mb-2"
+          label="Company"
           value={block.props.company || ""}
-          onChange={(e) => updateBlock(block.id, { company: e.target.value })}
-          placeholder="Company name..."
-          aria-describedby="company-description"
+          onChange={(value) => updateBlock(block.id, { company: value })}
+          placeholder="Enter company name..."
+          description="Enter the company name"
         />
-        <span id="company-description" className="sr-only">Enter the company name</span>
-        <input
+        <TextField
           id="position-input"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          label="Position"
           value={block.props.position || ""}
-          onChange={(e) => updateBlock(block.id, { position: e.target.value })}
-          placeholder="Position..."
-          aria-describedby="position-description"
+          onChange={(value) => updateBlock(block.id, { position: value })}
+          placeholder="Enter position..."
+          description="Enter the customer's position or job title"
         />
-        <span id="position-description" className="sr-only">Enter the customer's position or job title</span>
-      </div>
-      <div className="pt-4 border-t border-gray-200">
-        <button
-          onClick={handleDelete}
-          className="w-full bg-red-500 hover:bg-red-600 text-white rounded-lg px-4 py-2 font-medium transition-colors"
-          aria-label="Delete text block"
-        >
-          Delete Text Block
-        </button>
-      </div>
+     <ActionButton variant="delete" block={block} label="Delete Testimonial" />
     </div>
   );
 }

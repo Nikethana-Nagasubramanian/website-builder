@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { TabNavigation } from "../../components/editor-fields/TabNavigation";
-import { DeleteButton } from "../../components/editor-fields/DeleteButton";
+import { ActionButton } from "../../components/editor-fields/ActionButton";
 import { ContentTab } from "./ContentTab";
 import { StylingTab } from "./StylingTab";
 import { LayoutTab } from "./LayoutTab";
@@ -28,7 +28,7 @@ export function HeroSectionBlockEditor({ block }: HeroSectionBlockEditorProps) {
       {activeTab === "styling" && <StylingTab block={block} />}
       {activeTab === "layout" && <LayoutTab block={block} />}
 
-      <DeleteButton block={block} label="Delete Hero Section" />
+      <ActionButton variant="delete" block={block} label="Delete Hero Section" />
     </div>
   );
 }

@@ -1,0 +1,118 @@
+import { FeatureCardBlock } from "./FeatureCardBlock";
+import { HeroSection } from "./HeroSection";
+import { TestimonialSection } from "./TestimonialSection";
+import { FeatureCardBlockEditor } from "../block-editors/FeatureCardBlockEditor";
+import { HeroSectionBlockEditor } from "../block-editors/hero-section/HeroSectionBlockEditor";
+import { TestimonialSectionEditor } from "../block-editors/TextBlockEditor";
+import { NavBarEditor } from "../block-editors/NavBarEditor";
+import { FooterEditor } from "../block-editors/FooterEditor";
+import { NavBar } from "./NavBar";
+import { Footer } from "./Footer";
+import { Quotes, Cards, Star, Rectangle } from "phosphor-react";
+import hero1 from "../assets/background3.jpg";
+
+export type BlockDefinition = {
+  id: string;
+  name: string;
+  description: string;
+  icon: React.ReactNode;
+  component: React.ComponentType<any>;
+  editor: React.ComponentType<any>;
+  defaultProps: any;
+};
+
+export const BLOCK_DEFINITIONS: Record<string, BlockDefinition> = {
+  testimonialSection: {
+    id: "testimonialSection",
+    name: "Testimonial Section",
+    description: "Add a customer testimonial",
+    icon: <Quotes className="w-5 h-5" weight="fill" />,
+    component: TestimonialSection,
+    editor: TestimonialSectionEditor,
+    defaultProps: {
+      text: "Gradial is a great tool and has saved us a lot of time and money.",
+      customerName: "Daniel O'Connell",
+      company: "Alpha Systems",
+      position: "VP of Engineering",
+    },
+  },
+  featureCard: {
+    id: "featureCard",
+    name: "Feature Card",
+    description: "Add a feature card element",
+    icon: <Cards className="w-5 h-5" weight="fill" />,
+    component: FeatureCardBlock,
+    editor: FeatureCardBlockEditor,
+    defaultProps: {
+      title: "Brand Compliance & QA",
+      description: "Enforce brand, SEO, and accessibility standards across every page, then automatically flag and fix issues so teams maintain consistent, high-quality experiences at scale",
+      imageUrl: "https://via.placeholder.com/256x192",
+    },
+  },
+  heroSection: {
+    id: "heroSection",
+    name: "Hero Section",
+    description: "Add a hero section",
+    icon: <Star className="w-5 h-5" weight="fill" />,
+    component: HeroSection,
+    editor: HeroSectionBlockEditor,
+    defaultProps: {
+      title: "Welcome to our website",
+      description: "This is a description of our website",
+      bgImage: hero1,
+      textColor: "text-white",
+      padding: "8",
+      spacing: "4",
+      textAlign: "center",
+    },
+  },
+  navBar: {
+    id: "navBar",
+    name: "Navigation Bar",
+    description: "Add a navigation bar",
+    icon: <Star className="w-5 h-5" weight="fill" />,
+    component: NavBar,
+    editor: NavBarEditor,
+    defaultProps: {
+      logo: "",
+      links: [
+        { label: "Features", url: "" },
+        { label: "Testimonial", url: "" }
+      ]
+    }
+  },
+  footer: {
+    id: "footer",
+    name: "Footer",
+    description: "Add a footer",
+    icon: <Rectangle className="w-5 h-5" weight="fill" />,
+    component: Footer,
+    editor: FooterEditor,
+    defaultProps: {
+      text: "© 2024 Nike | Page Builder Demo"
+    }
+  },
+}
+
+// Derive registries from definitions
+export const BLOCKS = Object.fromEntries(
+  Object.entries(BLOCK_DEFINITIONS).map(([key, def]) => [key, def.component])
+);
+
+export const BLOCK_EDITOR_REGISTRY = Object.fromEntries(
+  Object.entries(BLOCK_DEFINITIONS).map(([key, def]) => [key, def.editor])
+);
+
+// Get block types for Sidebar
+export const BLOCK_TYPES = Object.values(BLOCK_DEFINITIONS).map((def) => ({
+  id: def.id,
+  name: def.name,
+  description: def.description,
+  icon: def.icon,
+}));
+
+// Get default props map for store
+export const DEFAULT_PROPS_MAP = Object.fromEntries(
+  Object.entries(BLOCK_DEFINITIONS).map(([key, def]) => [key, def.defaultProps])
+);
+

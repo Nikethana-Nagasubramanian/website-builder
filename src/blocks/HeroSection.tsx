@@ -42,7 +42,6 @@ export function HeroSection({
     return (
         <div className="relative h-[800px] w-full">
             <img src={bgImage} alt={title} className="absolute inset-0 w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-black opacity-50"></div>
             <div className={`absolute inset-0 z-10 flex flex-col justify-center ${alignmentClass} ${paddingClass}`}>
                 <div className={`flex flex-col ${spacingClass} max-w-[600px] ${textAlign === "center" ? "mx-auto" : textAlign === "right" ? "ml-auto" : ""}`}>
                     <h1 className={`text-6xl font-bold ${textColor}`}>{title}</h1>

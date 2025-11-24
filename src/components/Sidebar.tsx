@@ -1,27 +1,5 @@
 import { usePageStore } from "../store/usePageStore";
-import { Quotes, Cards, Star } from "phosphor-react";
-
-// Block type definitions - this will grow!
-const BLOCK_TYPES = [
-  {
-    id: "text",
-    name: "Testimonial Section",
-    description: "Add a customer testimonial",
-    icon: <Quotes className="w-5 h-5" weight="fill" />,
-  },
-  {
-    id: "featureCard",
-    name: "Feature Card",
-    description: "Add a feature card element",
-    icon: <Cards className="w-5 h-5" weight="fill" />,
-  },
-  {
-    id: "heroSection",
-    name: "Hero Section",
-    description: "Add a hero section",
-    icon: <Star className="w-5 h-5" weight="fill" />,
-  },
-];
+import { BLOCK_TYPES } from "../blocks/blockDefinitions";
 
 export function Sidebar() {
   const addBlock = usePageStore((s) => s.addBlock);

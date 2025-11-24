@@ -1,9 +1,3 @@
-import { FeatureCardBlock } from "./FeatureCardBlock";
-import { HeroSection } from "./HeroSection";
-import { TextBlock } from "./TextBlock";
-
-export const BLOCKS: any = {
-  text: TextBlock,
-  featureCard: FeatureCardBlock,
-  heroSection: HeroSection,
-};
+// BlockRegistry is now derived from blockDefinitions
+// This file is kept for backward compatibility
+export { BLOCKS } from "./blockDefinitions";
