@@ -1,5 +1,5 @@
 import { usePageStore } from "../store/usePageStore";
-import { BLOCKS } from "../blocks/BlockRegistry";
+import { BLOCKS } from "./rendered-blocks/BlockRegistry";
 
 export function Canvas() {
   const page = usePageStore((s) => s.page);

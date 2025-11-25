@@ -1,4 +1,4 @@
-import { usePageStore } from "../../store/usePageStore";
+import { usePageStore } from "../../../store/usePageStore";
 
 type StylingTabProps = {
   block: { id: string; props: any };

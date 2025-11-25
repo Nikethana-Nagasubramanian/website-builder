@@ -7,7 +7,7 @@ import {
   useSortable 
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { BLOCKS } from "../blocks/BlockRegistry";
+import { BLOCKS } from "./rendered-blocks/BlockRegistry";
 import { DotsSixVertical } from "phosphor-react";
 
 type SortableBlockItemProps = {
@@ -79,7 +79,7 @@ function SortableBlockItem({ block }: SortableBlockItemProps) {
   );
 }
 
-export function ReorderTab() {
+export function ReorderBlocksPanel() {
   const { page, reorderBlocks } = usePageStore();
 
   const handleDragEnd = (event: DragEndEvent) => {

@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { nanoid } from "nanoid";
-import { DEFAULT_PROPS_MAP } from "../blocks/blockDefinitions";
+import { DEFAULT_PROPS_MAP } from "../components/rendered-blocks/blockDefinitions";
 
 export type Block = {
   id: string;
@@ -49,9 +49,38 @@ const loadState = (): { page: Block[]; selectedId: string | null; globalStyles: 
 
 const saveState = (page: Block[], globalStyles: GlobalStyles) => {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ page, globalStyles }));
+    const dataToSave = JSON.stringify({ page, globalStyles });
+    const dataSize = new Blob([dataToSave]).size;
+    const dataSizeMB = (dataSize / 1024 / 1024).toFixed(2);
+    
+    console.log(`Saving to localStorage - Size: ${dataSizeMB}MB`);
+    
+    // Check localStorage quota before saving
+    try {
+      const testKey = '__quota_test__';
+      localStorage.setItem(testKey, 'test');
+      localStorage.removeItem(testKey);
+    } catch (e) {
+      console.error("localStorage quota may be full:", e);
+      // Don't alert here as it might be too frequent - let the actual save attempt handle it
+    }
+    
+    localStorage.setItem(STORAGE_KEY, dataToSave);
+    console.log("Successfully saved to localStorage");
   } catch (error) {
     console.error("Failed to save state to localStorage:", error);
+    if (error instanceof DOMException) {
+      if (error.code === 22 || error.name === 'QuotaExceededError') {
+        const errorMessage = "Storage quota exceeded! The image is too large. Please use a smaller image or remove other content.";
+        console.error(errorMessage);
+        // Use setTimeout to avoid blocking the UI thread
+        setTimeout(() => {
+          alert(errorMessage);
+        }, 100);
+      } else {
+        console.error(`Storage error: ${error.message}`);
+      }
+    }
   }
 };
 
@@ -74,21 +103,42 @@ export const usePageStore = create<PageState>((set, get) => ({
 
   updateBlock: (id, props) =>
     set((state) => {
-      const newPage = state.page.map((block) =>
-        block.id === id ? { ...block, props: { ...block.props, ...props } } : block
-      );
+      const newPage = state.page.map((block) => {
+        if (block.id === id) {
+          // For features array, we need to replace it entirely, not merge
+          const updatedProps = { ...block.props };
+          if (props.features) {
+            updatedProps.features = props.features;
+          }
+          // Merge other props
+          Object.keys(props).forEach(key => {
+            if (key !== 'features') {
+              updatedProps[key] = props[key];
+            }
+          });
+          return { ...block, props: updatedProps };
+        }
+        return block;
+      });
       saveState(newPage, state.globalStyles);
       return { page: newPage };
     }),
 
   selectBlock: (id) => set({ selectedId: id }),
 
-  deleteBlock: (id) =>
+  deleteBlock: (id) => {
+    let newPage: Block[];
+    let globalStyles: GlobalStyles;
+    
     set((state) => {
-      const newPage = state.page.filter((block) => block.id !== id);
-      saveState(newPage, state.globalStyles);
+      newPage = state.page.filter((block) => block.id !== id);
+      globalStyles = state.globalStyles;
       return { page: newPage, selectedId: null };
-    }),
+    });
+    
+    // Save after state is updated
+    saveState(newPage!, globalStyles!);
+  },
 
   reorderBlocks: (newOrder) => {
     saveState(newOrder, get().globalStyles);

@@ -1,10 +1,11 @@
-import { useEffect } from "react";
-import { usePageStore } from "../store/usePageStore";
-import { FileUploadField } from "../components/editor-fields/FileUploadField";
-import { TextField } from "../components/editor-fields/TextField";
-import { TextAreaField } from "../components/editor-fields/TextAreaField";
-import { ActionButton } from "../components/editor-fields/ActionButton";
+import { useEffect, useState } from "react";
+import { usePageStore } from "../../store/usePageStore";
+import { FileUploadField } from "../reusable-components/FileUploadField";
+import { TextField } from "../reusable-components/TextField";
+import { TextAreaField } from "../reusable-components/TextAreaField";
+import { ActionButton } from "../reusable-components/ActionButton";
 import { Plus, Trash } from "phosphor-react";
+import { compressImage } from "../../utils/imageCompression";
 
 type FeatureItem = {
   title: string;
@@ -40,6 +41,7 @@ const DEFAULT_FEATURES: FeatureItem[] = [
 
 export function FeatureCardBlockEditor({ block }: { block: any }) {
   const updateBlock = usePageStore((s) => s.updateBlock);
+  const [uploadingIndex, setUploadingIndex] = useState<number | null>(null);
   const features: FeatureItem[] = block.props.features && block.props.features.length > 0
     ? block.props.features
     : DEFAULT_FEATURES;
@@ -52,23 +54,73 @@ export function FeatureCardBlockEditor({ block }: { block: any }) {
   }, [block.id]);
 
   const updateFeatures = (updated: FeatureItem[]) => {
-    updateBlock(block.id, { features: updated });
+    // Create a deep copy to ensure we're not passing references
+    const featuresCopy = updated.map(f => ({
+      title: f.title,
+      description: f.description,
+      imageUrl: f.imageUrl,
+      linkUrl: f.linkUrl,
+      linkText: f.linkText,
+    }));
+    updateBlock(block.id, { features: featuresCopy });
   };
 
   const handleFeatureChange = (index: number, field: keyof FeatureItem, value: string) => {
-    const updated = [...features];
-    updated[index] = { ...updated[index], [field]: value };
+    const updated = features.map((f, i) => 
+      i === index ? { ...f, [field]: value } : { ...f }
+    );
     updateFeatures(updated);
   };
 
-  const handleImageUpload = (index: number, file: File) => {
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const updated = [...features];
-      updated[index] = { ...updated[index], imageUrl: reader.result as string };
-      updateFeatures(updated);
-    };
-    reader.readAsDataURL(file);
+  const handleImageUpload = async (index: number, file: File) => {
+    // Check file size (5MB limit for original file)
+    const maxFileSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxFileSize) {
+      alert(`Image is too large (${(file.size / 1024 / 1024).toFixed(2)}MB). Please use an image smaller than 5MB.`);
+      return;
+    }
+
+    setUploadingIndex(index);
+    
+    try {
+      // Compress the image before converting to base64
+      const compressedFile = await compressImage(file, 1920, 1080, 0.8);
+      
+      const reader = new FileReader();
+      reader.onerror = () => {
+        console.error("Failed to read image file");
+        alert("Failed to process image. Please try again.");
+        setUploadingIndex(null);
+      };
+      
+      reader.onloadend = () => {
+        if (reader.result) {
+          const base64String = reader.result as string;
+          const originalSize = file.size;
+          const compressedSize = compressedFile.size;
+          const base64Size = base64String.length;
+          
+          console.log(`Image processed - Original: ${(originalSize / 1024).toFixed(2)}KB, Compressed: ${(compressedSize / 1024).toFixed(2)}KB, Base64: ${(base64Size / 1024).toFixed(2)}KB`);
+          
+          // Warn if base64 is still very large
+          if (base64Size > 3 * 1024 * 1024) {
+            console.warn("Warning: Base64 image is still large, may cause storage issues");
+          }
+
+          const updated = features.map((f, i) => 
+            i === index ? { ...f, imageUrl: base64String } : { ...f }
+          );
+          updateFeatures(updated);
+          setUploadingIndex(null);
+        }
+      };
+      
+      reader.readAsDataURL(compressedFile);
+    } catch (error) {
+      console.error("Image compression error:", error);
+      alert("Failed to compress image. Please try a different image.");
+      setUploadingIndex(null);
+    }
   };
 
   const removeFeature = (index: number) => {
@@ -154,7 +206,7 @@ export function FeatureCardBlockEditor({ block }: { block: any }) {
               label="Upload Image"
               accept="image/*"
               onChange={(file) => handleImageUpload(index, file)}
-              description="Upload image for this feature"
+              description={uploadingIndex === index ? "Processing image..." : "Upload image for this feature"}
             />
           </div>
         ))}

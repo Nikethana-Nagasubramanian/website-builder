@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { TabNavigation } from "../../components/editor-fields/TabNavigation";
-import { ActionButton } from "../../components/editor-fields/ActionButton";
+import { TabNavigation } from "../../reusable-components/TabNavigation";
+import { ActionButton } from "../../reusable-components/ActionButton";
 import { ContentTab } from "./ContentTab";
 import { StylingTab } from "./StylingTab";
 import { LayoutTab } from "./LayoutTab";

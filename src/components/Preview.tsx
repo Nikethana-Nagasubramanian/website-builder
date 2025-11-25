@@ -1,5 +1,5 @@
 import { usePageStore } from "../store/usePageStore";
-import { BLOCKS } from "../blocks/BlockRegistry";
+import { BLOCKS } from "./rendered-blocks/BlockRegistry";
 
 export function Preview() {
   const page = usePageStore((s) => s.page);
@@ -16,7 +16,7 @@ export function Preview() {
           {page.map((block) => {
             const Comp = BLOCKS[block.type];
             return (
-              <div key={block.id} className="w-full">
+              <div key={block.id} id={block.id} className="w-full scroll-mt-20">
                 <Comp {...block.props} />
               </div>
             );

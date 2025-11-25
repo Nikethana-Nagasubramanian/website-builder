@@ -1,6 +1,6 @@
-import { usePageStore } from "../store/usePageStore";
-import { TextField } from "../components/editor-fields/TextField";
-import { ActionButton } from "../components/editor-fields/ActionButton";
+import { usePageStore } from "../../store/usePageStore";
+import { TextField } from "../reusable-components/TextField";
+import { ActionButton } from "../reusable-components/ActionButton";
 
 export function FooterEditor({ block }: { block: any }) {
   const updateBlock = usePageStore((s) => s.updateBlock);

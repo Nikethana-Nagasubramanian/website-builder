@@ -1,7 +1,7 @@
 import { usePageStore } from "../store/usePageStore";
-import { BLOCK_TYPES } from "../blocks/blockDefinitions";
+import { BLOCK_TYPES } from "./rendered-blocks/blockDefinitions";
 
-export function Sidebar() {
+export function AddBlocksPanel() {
   const addBlock = usePageStore((s) => s.addBlock);
 
   return (

@@ -1,8 +1,8 @@
 import { usePageStore } from "../store/usePageStore";
 import { Sparkle } from "phosphor-react";
-import { BLOCK_EDITOR_REGISTRY } from "../block-editors/BlockEditorRegistry";
+import { BLOCK_EDITOR_REGISTRY } from "./editor-blocks/BlockEditorRegistry";
 
-export function Inspector() {
+export function EditBlocksPanel() {
   const { page, selectedId } = usePageStore();
   const block = page.find((b) => b.id === selectedId);
 

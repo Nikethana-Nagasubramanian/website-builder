@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { usePageStore } from "../store/usePageStore";
-import { TextField } from "../components/editor-fields/TextField";
-import { ActionButton } from "../components/editor-fields/ActionButton";
+import { usePageStore } from "../../store/usePageStore";
+import { TextField } from "../reusable-components/TextField";
+import { ActionButton } from "../reusable-components/ActionButton";
 import { Trash, Plus } from "phosphor-react";
-import { BLOCK_DEFINITIONS } from "../blocks/blockDefinitions";
+import { BLOCK_DEFINITIONS } from "../rendered-blocks/blockDefinitions";
 
 const DEFAULT_LINKS = [
   { label: "Features", url: "" },

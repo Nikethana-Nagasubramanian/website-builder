@@ -1,18 +1,18 @@
 import { Routes, Route } from "react-router-dom";
 import { Canvas } from "./components/Canvas";
-import { Inspector } from "./components/Inspector";
-import { LeftSidebar } from "./components/LeftSidebar";
+import { EditBlocksPanel } from "./components/EditBlocksPanel";
+import { LeftPanel } from "./components/LeftPanel";
 import { Preview } from "./components/Preview";
 import "./App.css";
 
 function Editor() {
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-white">
-      <LeftSidebar />
+      <LeftPanel />
       <div className="flex-1 flex flex-col relative">
       <Canvas />
       </div>
-      <Inspector />
+      <EditBlocksPanel />
     </div>
   );
 }
