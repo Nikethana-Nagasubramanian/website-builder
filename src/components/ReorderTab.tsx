@@ -36,7 +36,11 @@ function SortableBlockItem({ block }: SortableBlockItemProps) {
     featureCard: "Feature Card",
     heroSection: "Hero Section",
     navBar: "Navigation Bar",
+    footer: "Footer",
   };
+
+  // Don't render the actual NavBar component in preview - it's fixed positioned
+  const shouldRenderComponent = block.type !== "navBar";
 
   return (
     <div
@@ -59,12 +63,16 @@ function SortableBlockItem({ block }: SortableBlockItemProps) {
           {blockTypeNames[block.type] || block.type}
         </div>
         <div className="text-xs text-gray-500 truncate">
-          {block.props.title || block.props.text?.substring(0, 50) || "No content"}
+          {block.props.title || block.props.text?.substring(0, 50) || block.props.logo || "No content"}
         </div>
       </div>
       <div className="flex-shrink-0">
-        <div className="w-12 h-8 bg-gray-100 rounded border border-gray-200 overflow-hidden">
-          {Comp && <Comp {...block.props} />}
+        <div className="w-12 h-8 bg-gray-100 rounded border border-gray-200 overflow-hidden flex items-center justify-center">
+          {shouldRenderComponent && Comp ? (
+            <Comp {...block.props} />
+          ) : (
+            <div className="text-xs text-gray-400">NavBar</div>
+          )}
         </div>
       </div>
     </div>

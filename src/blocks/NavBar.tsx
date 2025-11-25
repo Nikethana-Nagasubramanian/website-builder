@@ -24,3 +24,4 @@ export function NavBar({ logo, links = [] }: Props) {
         </div>
     );
 }
+  

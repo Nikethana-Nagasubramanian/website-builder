@@ -9,7 +9,7 @@ import { FooterEditor } from "../block-editors/FooterEditor";
 import { NavBar } from "./NavBar";
 import { Footer } from "./Footer";
 import { Quotes, Cards, Star, Rectangle } from "phosphor-react";
-import hero1 from "../assets/background3.jpg";
+import hero1 from "../assets/background1.jpg";
 
 export type BlockDefinition = {
   id: string;
