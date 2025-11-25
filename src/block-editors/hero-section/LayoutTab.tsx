@@ -18,6 +18,13 @@ const ALIGNMENT_OPTIONS = [
   { value: "right", label: "Right" },
 ];
 
+const HEIGHT_OPTIONS = [
+  { value: "short", label: "Short" },
+  { value: "medium", label: "Medium" },
+  { value: "tall", label: "Tall" },
+  { value: "full", label: "Full Height" },
+];
+
 export function LayoutTab({ block }: LayoutTabProps) {
   const updateBlock = usePageStore((s) => s.updateBlock);
 
@@ -80,6 +87,24 @@ export function LayoutTab({ block }: LayoutTabProps) {
             </button>
           ))}
         </div>
+      </div>
+
+      <div>
+        <label htmlFor="hero-height-input" className="block text-sm font-medium text-gray-700 mb-2">
+          Section Height
+        </label>
+        <select
+          id="hero-height-input"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          value={block.props.sectionHeight || "tall"}
+          onChange={(e) => updateBlock(block.id, { sectionHeight: e.target.value })}
+        >
+          {HEIGHT_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
       </div>
     </div>
   );

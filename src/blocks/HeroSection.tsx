@@ -6,6 +6,7 @@ type Props = {
     padding?: string;
     spacing?: string;
     textAlign?: "left" | "center" | "right";
+    sectionHeight?: "short" | "medium" | "tall" | "full";
 }
 
 const PADDING_MAP: Record<string, string> = {
@@ -24,6 +25,13 @@ const SPACING_MAP: Record<string, string> = {
     "16": "gap-16",
 };
 
+const HEIGHT_MAP: Record<string, string> = {
+    short: "h-[450px]",
+    medium: "h-[600px]",
+    tall: "h-[800px]",
+    full: "min-h-screen",
+};
+
 export function HeroSection({ 
     title, 
     description, 
@@ -31,16 +39,18 @@ export function HeroSection({
     textColor = "text-white",
     padding = "8",
     spacing = "4",
-    textAlign = "center"
+    textAlign = "center",
+    sectionHeight = "tall",
 }: Props) {
     const paddingClass = PADDING_MAP[padding] || "p-8";
     const spacingClass = SPACING_MAP[spacing] || "gap-4";
     const alignmentClass = textAlign === "left" ? "items-start text-left" : 
                           textAlign === "right" ? "items-end text-right" : 
                           "items-center text-center";
+    const heightClass = HEIGHT_MAP[sectionHeight] || HEIGHT_MAP.tall;
 
     return (
-        <div className="relative h-[800px] w-full">
+        <div className={`relative w-full ${heightClass}`}>
             <img src={bgImage} alt={title} className="absolute inset-0 w-full h-full object-cover" />
             <div className={`absolute inset-0 z-10 flex flex-col justify-center ${alignmentClass} ${paddingClass}`}>
                 <div className={`flex flex-col ${spacingClass} max-w-[600px] ${textAlign === "center" ? "mx-auto" : textAlign === "right" ? "ml-auto" : ""}`}>

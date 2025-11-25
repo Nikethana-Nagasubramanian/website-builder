@@ -2,10 +2,18 @@ import { usePageStore } from "../store/usePageStore";
 import { BLOCKS } from "../blocks/BlockRegistry";
 
 export function Canvas() {
-  const { page, selectBlock, selectedId } = usePageStore(); 
+  const page = usePageStore((s) => s.page);
+  const selectBlock = usePageStore((s) => s.selectBlock);
+  const selectedId = usePageStore((s) => s.selectedId);
+  const fontFamily = usePageStore((s) => s.globalStyles.fontFamily);
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 bg-white" role="main" aria-label="Canvas area">
+    <div
+      className="flex-1 overflow-y-auto p-6 bg-white"
+      role="main"
+      aria-label="Canvas area"
+      style={{ fontFamily }}
+    >
       {page.length === 0 ? (
         <div className="text-center py-12 text-gray-500" aria-live="polite">
           <p>No blocks added yet. Use the sidebar to add blocks.</p>

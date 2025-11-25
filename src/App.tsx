@@ -10,7 +10,7 @@ function Editor() {
     <div className="flex h-screen w-screen overflow-hidden bg-white">
       <LeftSidebar />
       <div className="flex-1 flex flex-col relative">
-        <Canvas />
+      <Canvas />
       </div>
       <Inspector />
     </div>

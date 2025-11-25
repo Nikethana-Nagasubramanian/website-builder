@@ -5,9 +5,17 @@ import { TabNavigation } from "./editor-fields/TabNavigation";
 import { usePageStore } from "../store/usePageStore";
 import { Eye } from "phosphor-react";
 
+const FONT_OPTIONS = [
+  { label: "Inter", value: "'Inter', sans-serif" },
+  { label: "Playfair", value: "'Playfair Display', serif" },
+  { label: "Space Grotesk", value: "'Space Grotesk', sans-serif" },
+];
+
 export function LeftSidebar() {
   const [activeTab, setActiveTab] = useState<"add" | "reorder">("add");
   const page = usePageStore((s) => s.page);
+  const globalStyles = usePageStore((s) => s.globalStyles);
+  const setFontFamily = usePageStore((s) => s.setFontFamily);
   
   const canPreview = page.length > 2;
 
@@ -18,7 +26,10 @@ export function LeftSidebar() {
     }
     // Ensure current state is saved to localStorage before opening preview
     try {
-      localStorage.setItem("page-builder-state", JSON.stringify({ page }));
+      localStorage.setItem(
+        "page-builder-state",
+        JSON.stringify({ page, globalStyles })
+      );
     } catch (error) {
       console.error("Failed to save state before preview:", error);
     }
@@ -47,6 +58,27 @@ export function LeftSidebar() {
             <ReorderTab />
           </div>
         )}
+      </div>
+      <div className="p-4 border-t border-gray-100 bg-white flex-shrink-0">
+        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          Global Styles
+        </h3>
+        <div className="flex gap-2">
+          {FONT_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => setFontFamily(option.value)}
+              className={`flex-1 px-3 py-2 rounded-lg border text-sm transition-colors ${
+                globalStyles.fontFamily === option.value
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-white text-gray-700 border-gray-300 hover:border-gray-400"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
       </div>
       {/* Preview Button - Fixed at bottom */}
       <div className="p-4 border-t border-gray-200 bg-white flex-shrink-0">

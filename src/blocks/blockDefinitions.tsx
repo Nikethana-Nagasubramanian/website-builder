@@ -44,9 +44,30 @@ export const BLOCK_DEFINITIONS: Record<string, BlockDefinition> = {
     component: FeatureCardBlock,
     editor: FeatureCardBlockEditor,
     defaultProps: {
-      title: "Brand Compliance & QA",
-      description: "Enforce brand, SEO, and accessibility standards across every page, then automatically flag and fix issues so teams maintain consistent, high-quality experiences at scale",
-      imageUrl: "https://via.placeholder.com/256x192",
+      features: [
+        {
+          title: "Brand Compliance & QA",
+          description:
+            "Enforce brand, SEO, and accessibility standards across every page, then automatically flag and fix issues so teams maintain consistent experiences.",
+          imageUrl: "https://via.placeholder.com/256x192",
+          linkUrl: "#",
+          linkText: "Learn more",
+        },
+        {
+          title: "Workflow Automation",
+          description: "Automate repetitive page updates with simple workflows that keep teams focused on high-impact work.",
+          imageUrl: "https://via.placeholder.com/256x192",
+          linkUrl: "#",
+          linkText: "Read more",
+        },
+        {
+          title: "Performance Insights",
+          description: "Monitor conversion, accessibility, and SEO metrics for every page in real-time.",
+          imageUrl: "https://via.placeholder.com/256x192",
+          linkUrl: "#",
+          linkText: "See insights",
+        },
+      ],
     },
   },
   heroSection: {
@@ -64,6 +85,7 @@ export const BLOCK_DEFINITIONS: Record<string, BlockDefinition> = {
       padding: "8",
       spacing: "4",
       textAlign: "center",
+      sectionHeight: "tall",
     },
   },
   navBar: {
