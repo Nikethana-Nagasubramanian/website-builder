@@ -6,36 +6,13 @@ Hosted on Vercel: gradial-assessment.vercel.app
 Product Demo & My Explanation: 
 
 ### Install dependencies
-npm install
-npm run dev
-npm run build - (for production build)
-npm run preview - (to preview production locally)
+- npm install
+- npm run dev
+- npm run build (for production build)
+- npm run preview (to preview production locally)
 
 # Project Overall Structure:
-
-src/
-├── components/
-│   ├── rendered-blocks/        # The blocks as they appear on the canvas (Hero, Feature Card, etc.)
-│   │   └── blockDefinitions.tsx  # Single source of truth: block definitions with components, editors, defaults, and UI metadata
-│   ├── editor-blocks/          # Inspector editors for each block (form controls)
-│   │   └── hero-section/       # Hero section editor with tabs (Content, Styling, Layout)
-│   ├── reusable-components/    # Shared UI components (fields, buttons, tab navigation, etc.)
-│   ├── LeftPanel.tsx           # "Add" & "Reorder" tabs with global styles
-│   ├── AddBlocksPanel.tsx      # Panel for adding new blocks
-│   ├── ReorderBlocksPanel.tsx  # Drag-and-drop reordering interface
-│   ├── EditBlocksPanel.tsx     # Inspector/Editor panel (right side)
-│   ├── Canvas.tsx               # Renders page blocks and handles selection state
-│   └── Preview.tsx              # Preview mode component
-│
-├── store/
-│   └── usePageStore.ts         # Zustand global state (page, selection, reorder, localStorage persistence)
-│
-├── utils/
-│   └── imageCompression.ts     # Image compression utilities for localStorage optimization
-│
-├── assets/                     # Image assets (background presets, etc.)
-├── App.tsx                     # App layout with routing (Editor + Preview)
-└── index.css                   # Global styles
+![code-structure-image](./src/assets/code-structure.png)
 
 ## Features
 
