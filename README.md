@@ -1,4 +1,4 @@
-# Gradial Take-Home Assessment: 
+# Website Builder: 
 A lightweight, React + Vite–powered webpage builder interface inspired by tools like Framer, Webflow, and Squarespace.
 Users can add blocks, edit content, reorder sections via drag-and-drop, upload assets, and preview the composed page on canvas — all in a clean, modular, scalable architecture.
 
