@@ -1,6 +1,7 @@
 import { usePageStore } from "../../store/usePageStore";
-import { useState, useRef, type ReactNode } from "react";
-import { createPortal } from "react-dom"; // This is the "teleporter"
+import { type ReactNode } from "react";
+import { Tooltip } from "./Tooltip";
+import * as RadixTooltip from '@radix-ui/react-tooltip';
 
 type ActionButtonVariant = "delete" | "save" | "cancel" | "preview" | "secondary";
 
@@ -42,23 +43,6 @@ export function ActionButton({
   className = "",
 }: ActionButtonProps) {
   const store = usePageStore();
-  
-  // 1. State to track tooltip position and visibility
-  const [isHovered, setIsHovered] = useState(false);
-  const [coords, setCoords] = useState({ top: 0, left: 0 });
-  const triggerRef = useRef<HTMLDivElement>(null);
-
-  const handleMouseEnter = () => {
-    if (triggerRef.current) {
-      // 2. Measure exactly where the button is on the screen
-      const rect = triggerRef.current.getBoundingClientRect();
-      setCoords({
-        top: rect.top, // Vertical start of button
-        left: rect.left + rect.width / 2, // Horizontal center of button
-      });
-      setIsHovered(true);
-    }
-  };
 
   const getDefaultHandler = () => {
     if (!block) return () => { };
@@ -122,33 +106,45 @@ export function ActionButton({
       </button>
     );
 
-  const containerClasses = showBorder ? "pt-4 border-t border-border" : "";
+    const containerClasses = showBorder ? "pt-4 border-t border-border" : "";
 
-  return (
-    <div 
-      ref={triggerRef}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={() => setIsHovered(false)}
-      className={`relative ${containerClasses}`}
-    >
-      {buttonElement}
-
-      {/* 3. The Portal: Teleporting the tooltip to document.body */}
-      {tooltip && isDisabled && isHovered && createPortal(
-        <div 
-          className="fixed z-[9999] px-3 py-2 rounded-md text-sm bg-gray-900 text-white shadow-xl pointer-events-none whitespace-nowrap"
-          style={{
-            top: `${coords.top - 8}px`, // 8px gap above the button
-            left: `${coords.left}px`,
-            transform: 'translate(-50%, -100%)', // Centers it and pulls it above
-          }}
-        >
-          {tooltip}
-          {/* Optional: Little triangle arrow */}
-          <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-gray-900" />
-        </div>,
-        document.body
-      )}
-    </div>
-  );
-}
+    // Only render tooltip if tooltip content exists
+    if (!tooltip) {
+      return (
+        <div className={containerClasses}>
+          {buttonElement}
+        </div>
+      );
+    }
+  
+    // Extract width classes from className to apply to wrapper
+    const widthClasses = className.match(/\bw-\S+/g)?.join(' ') || '';
+    const wrapperClasses = widthClasses ? `block ${widthClasses}` : 'inline-block';
+  
+    return (
+      <div className={containerClasses}>
+        <RadixTooltip.Provider>
+          <RadixTooltip.Root delayDuration={200}>
+            {/* Wrap in a span/div to handle disabled button pointer events */}
+            <RadixTooltip.Trigger asChild>
+              <span className={wrapperClasses}>
+                {buttonElement}
+              </span>
+            </RadixTooltip.Trigger>
+  
+            <RadixTooltip.Portal>
+              <RadixTooltip.Content
+                side="top"
+                align="center"
+                sideOffset={5}
+                className="bg-gray-900 text-white px-3 py-1.5 rounded text-xs animate-in fade-in zoom-in-95"
+              >
+                {tooltip}
+                <RadixTooltip.Arrow className="fill-gray-900" />
+              </RadixTooltip.Content>
+            </RadixTooltip.Portal>
+          </RadixTooltip.Root>
+        </RadixTooltip.Provider>
+      </div>
+    );
+  }
