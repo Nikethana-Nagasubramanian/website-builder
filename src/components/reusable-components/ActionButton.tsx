@@ -1,5 +1,6 @@
 import { usePageStore } from "../../store/usePageStore";
-import type { ReactNode } from "react";
+import { useState, useRef, type ReactNode } from "react";
+import { createPortal } from "react-dom"; // This is the "teleporter"
 
 type ActionButtonVariant = "delete" | "save" | "cancel" | "preview" | "secondary";
 
@@ -40,33 +41,39 @@ export function ActionButton({
   showBorder = true,
   className = "",
 }: ActionButtonProps) {
-
   const store = usePageStore();
+  
+  // 1. State to track tooltip position and visibility
+  const [isHovered, setIsHovered] = useState(false);
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
+  const triggerRef = useRef<HTMLDivElement>(null);
 
-  const getDefaultHandler = () => {
-    if (!block) return () => { };
-
-    switch (variant) {
-      case "delete":
-        return () => store.deleteBlock(block.id);
-
-      case "cancel":
-        return () => store.selectBlock(null);
-
-      case "save":
-        return () => console.log("Saving block:", block.id);
-
-      default:
-        return () => { };
+  const handleMouseEnter = () => {
+    if (triggerRef.current) {
+      // 2. Measure exactly where the button is on the screen
+      const rect = triggerRef.current.getBoundingClientRect();
+      setCoords({
+        top: rect.top, // Vertical start of button
+        left: rect.left + rect.width / 2, // Horizontal center of button
+      });
+      setIsHovered(true);
     }
   };
 
+  const getDefaultHandler = () => {
+    if (!block) return () => { };
+    switch (variant) {
+      case "delete": return () => store.deleteBlock(block.id);
+      case "cancel": return () => store.selectBlock(null);
+      case "save": return () => console.log("Saving block:", block.id);
+      default: return () => { };
+    }
+  };
 
   const handleClick = onClick || getDefaultHandler();
   const isDisabled = disabled || (variant === "preview" && !href);
   const styles = VARIANT_STYLES[variant];
 
-  // Shadcn button sizing
   const buttonClasses = `
     inline-flex items-center justify-center 
     whitespace-nowrap text-sm font-medium
@@ -118,17 +125,29 @@ export function ActionButton({
   const containerClasses = showBorder ? "pt-4 border-t border-border" : "";
 
   return (
-    <div className={`relative group ${containerClasses}`}>
+    <div 
+      ref={triggerRef}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`relative ${containerClasses}`}
+    >
       {buttonElement}
 
-      {tooltip && isDisabled && (
-        <div className="
-          absolute bottom-full left-1/2 -translate-x-1/2 
-          mb-2 px-3 py-2 rounded-md text-sm bg-popover text-popover-foreground 
-          shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50
-        ">
+      {/* 3. The Portal: Teleporting the tooltip to document.body */}
+      {tooltip && isDisabled && isHovered && createPortal(
+        <div 
+          className="fixed z-[9999] px-3 py-2 rounded-md text-sm bg-gray-900 text-white shadow-xl pointer-events-none whitespace-nowrap"
+          style={{
+            top: `${coords.top - 8}px`, // 8px gap above the button
+            left: `${coords.left}px`,
+            transform: 'translate(-50%, -100%)', // Centers it and pulls it above
+          }}
+        >
           {tooltip}
-        </div>
+          {/* Optional: Little triangle arrow */}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-gray-900" />
+        </div>,
+        document.body
       )}
     </div>
   );
