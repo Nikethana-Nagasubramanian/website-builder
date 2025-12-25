@@ -1,6 +1,5 @@
 import { usePageStore } from "../../store/usePageStore";
 import { type ReactNode } from "react";
-import { Tooltip } from "./Tooltip";
 import * as RadixTooltip from '@radix-ui/react-tooltip';
 
 type ActionButtonVariant = "delete" | "save" | "cancel" | "preview" | "secondary";
@@ -117,7 +116,6 @@ export function ActionButton({
       );
     }
   
-    // Extract width classes from className to apply to wrapper
     const widthClasses = className.match(/\bw-\S+/g)?.join(' ') || '';
     const wrapperClasses = widthClasses ? `block ${widthClasses}` : 'inline-block';
   
@@ -125,7 +123,6 @@ export function ActionButton({
       <div className={containerClasses}>
         <RadixTooltip.Provider>
           <RadixTooltip.Root delayDuration={200}>
-            {/* Wrap in a span/div to handle disabled button pointer events */}
             <RadixTooltip.Trigger asChild>
               <span className={wrapperClasses}>
                 {buttonElement}
