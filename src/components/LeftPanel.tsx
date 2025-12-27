@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AddBlocksPanel } from "./AddBlocksPanel";
-import { ReorderBlocksPanel } from "./ReorderBlocksPanel";
+// import { ReorderBlocksPanel } from "./ReorderBlocksPanel"; // Kept for potential future use
 import { TabNavigation } from "./reusable-components/TabNavigation";
 import { ActionButton } from "./reusable-components/ActionButton";
 import { usePageStore } from "../store/usePageStore";
@@ -13,7 +13,7 @@ const FONT_OPTIONS = [
 ];
 
 export function LeftPanel() {
-  const [activeTab, setActiveTab] = useState<"add" | "reorder">("add");
+  const [activeTab, setActiveTab] = useState<"add">("add");
   const page = usePageStore((s) => s.page);
   const globalStyles = usePageStore((s) => s.globalStyles);
   const setFontFamily = usePageStore((s) => s.setFontFamily);
@@ -36,11 +36,11 @@ export function LeftPanel() {
     }
   };
 
-  type TabType = "add" | "reorder";
+  type TabType = "add"; // "reorder" removed - drag handles now in Canvas
 
   const tabs = [
     { id: "add" as TabType, label: "Add" },
-    { id: "reorder" as TabType, label: "Reorder" },
+    // Reorder tab removed - drag handles now appear on hover in Canvas
   ];
 
   return (
@@ -49,26 +49,15 @@ export function LeftPanel() {
         <TabNavigation tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
       </div>
       <div className="flex-1 overflow-y-auto">
-        {activeTab === "add" && (
-          <div 
-            id="add-panel" 
-            role="tabpanel" 
-            aria-labelledby="add-tab"
-            aria-hidden="false"
-          >
-            <AddBlocksPanel />
-          </div>
-        )}
-        {activeTab === "reorder" && (
-          <div 
-            id="reorder-panel" 
-            role="tabpanel" 
-            aria-labelledby="reorder-tab"
-            aria-hidden="false"
-          >
-            <ReorderBlocksPanel />
-          </div>
-        )}
+        <div 
+          id="add-panel" 
+          role="tabpanel" 
+          aria-labelledby="add-tab"
+          aria-hidden="false"
+        >
+          <AddBlocksPanel />
+        </div>
+        {/* Reorder panel removed - drag handles now appear on hover in Canvas */}
       </div>
       <div className="p-4 border-t border-gray-100 bg-white flex-shrink-0">
         <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
