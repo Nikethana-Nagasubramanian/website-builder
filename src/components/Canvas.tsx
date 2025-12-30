@@ -1,8 +1,8 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { usePageStore } from "../store/usePageStore";
 import { BLOCKS } from "./rendered-blocks/blockDefinitions";
-import { DndContext, closestCenter } from "@dnd-kit/core";
-import type { DragEndEvent } from "@dnd-kit/core";
+import { DndContext, closestCenter, closestCorners, DragOverlay, useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
+import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import { 
   SortableContext, 
   verticalListSortingStrategy, 
@@ -37,8 +37,8 @@ function SortableBlockWrapper({
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
+    transition: isDragging ? 'none' : transition, // Disable transition when dragging for smoother feel
+    opacity: isDragging ? 0.3 : 1,
   };
 
   const Comp = BLOCKS[block.type];
@@ -67,19 +67,22 @@ function SortableBlockWrapper({
       }}
       className={`relative group mb-4 ${
         block.id === selectedId ? "ring-2 ring-blue-500 ring-offset-2" : ""
-      } ${isDragging ? "z-50" : ""}`}
+      }`}
     >
+      {/* Always render content to preserve height during drag */}
       <Comp {...block.props} />
-      {/* Drag handle - appears on hover */}
-      <div
-        {...attributes}
-        {...listeners}
-        className="absolute right-0 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing z-10 p-2 hover:bg-gray-100 rounded"
-        aria-label="Drag to reorder"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <DotsSixVertical size={20} weight="bold" className="text-gray-400 hover:text-gray-600" />
-      </div>
+      {/* Drag handle - appears on hover, hidden when dragging */}
+      {!isDragging && (
+        <div
+          {...attributes}
+          {...listeners}
+          className="absolute right-0 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing z-10 p-2 hover:bg-gray-100 rounded"
+          aria-label="Drag to reorder"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <DotsSixVertical size={20} weight="bold" className="text-gray-400 hover:text-gray-600" />
+        </div>
+      )}
     </div>
   );
 }
@@ -92,6 +95,16 @@ export function Canvas() {
   const fontFamily = usePageStore((s) => s.globalStyles.fontFamily);
   
   const lastBlockRef = useRef<HTMLDivElement | null>(null);
+  const [activeId, setActiveId] = useState<string | null>(null);
+
+  // Configure sensors for better drag experience
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8, // Require 8px of movement before drag starts
+      },
+    })
+  );
 
   useEffect(() => {
     console.log("scrolling to last block");
@@ -103,8 +116,14 @@ export function Canvas() {
     });
   }, [page.length]);
 
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  };
+
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    
+    setActiveId(null);
     
     if (!over || active.id === over.id) {
       return;
@@ -121,6 +140,9 @@ export function Canvas() {
     }
   };
 
+  const activeBlock = activeId ? page.find((b) => b.id === activeId) : null;
+  const ActiveBlockComponent = activeBlock ? BLOCKS[activeBlock.type] : null;
+
   return (
     <div
       className="flex-1 overflow-y-auto p-6 bg-white"
@@ -133,7 +155,12 @@ export function Canvas() {
           <p>No blocks added yet. Use the sidebar to add blocks.</p>
         </div>
       ) : (
-        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <DndContext 
+          sensors={sensors}
+          collisionDetection={closestCorners} 
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
           <SortableContext
             items={page.map((b) => b.id)}
             strategy={verticalListSortingStrategy}
@@ -143,18 +170,33 @@ export function Canvas() {
                 const isLast = index === page.length - 1;
 
                 return (
-                  <SortableBlockWrapper
-                    key={block.id}
-                    block={block}
-                    isLast={isLast}
-                    selectedId={selectedId}
-                    onSelect={selectBlock}
-                    lastBlockRef={lastBlockRef}
-                  />
+                  <div key={block.id} data-id={block.id}>
+                    <SortableBlockWrapper
+                      block={block}
+                      isLast={isLast}
+                      selectedId={selectedId}
+                      onSelect={selectBlock}
+                      lastBlockRef={lastBlockRef}
+                    />
+                  </div>
                 );
               })}
             </div>
           </SortableContext>
+          <DragOverlay>
+            {activeBlock && ActiveBlockComponent && (
+              <div 
+                className="opacity-90 rotate-2 shadow-2xl"
+                style={{ 
+                  width: '100%',
+                  minWidth: '400px',
+                  maxWidth: '100%'
+                }}
+              >
+                <ActiveBlockComponent {...activeBlock.props} />
+              </div>
+            )}
+          </DragOverlay>
         </DndContext>
       )}
     </div>
