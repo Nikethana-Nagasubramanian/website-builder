@@ -2,8 +2,7 @@
 A lightweight, React + Vite–powered webpage builder interface inspired by tools like Framer, Webflow, and Squarespace.
 Users can add blocks, edit content, reorder sections via drag-and-drop, upload assets, and preview the composed page on canvas — all in a clean, modular, scalable architecture.
 
-Hosted on Vercel: gradial-assessment.vercel.app
-Product Demo & My Explanation: 
+Hosted on Vercel: single-webpage-builder.vercel.app
 
 ### Install dependencies
 - npm install
