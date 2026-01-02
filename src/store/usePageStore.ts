@@ -12,16 +12,34 @@ type GlobalStyles = {
   fontFamily: string;
 };
 
+type StateSnapshot = {
+  page: Block[];
+  globalStyles: GlobalStyles;
+};
+
+type HistoryState = {
+  past: StateSnapshot[];
+  present: StateSnapshot;
+  future: StateSnapshot[];
+};
+
+const MAX_HISTORY_SIZE = 50;
+
 type PageState = {
   page: Block[];
   selectedId: string | null;
   globalStyles: GlobalStyles;
+  history: HistoryState;
   addBlock: (type: string) => void;
   updateBlock: (id: string, props: any) => void;
   selectBlock: (id: string | null) => void;
   deleteBlock: (id: string) => void;
   reorderBlocks: (newOrder: Block[]) => void;
   setFontFamily: (fontFamily: string) => void;
+  undo: () => void;
+  redo: () => void;
+  canUndo: () => boolean;
+  canRedo: () => boolean;
 };
 
 const STORAGE_KEY = "page-builder-state";
@@ -86,24 +104,79 @@ const saveState = (page: Block[], globalStyles: GlobalStyles) => {
 
 const initialState = loadState();
 
+// Helper function to create a state snapshot
+const createSnapshot = (page: Block[], globalStyles: GlobalStyles): StateSnapshot => ({
+  page: JSON.parse(JSON.stringify(page)), // Deep clone
+  globalStyles: JSON.parse(JSON.stringify(globalStyles)), // Deep clone
+});
+
+// Helper function to apply a snapshot to state
+const applySnapshot = (snapshot: StateSnapshot) => {
+  return {
+    page: snapshot.page,
+    globalStyles: snapshot.globalStyles,
+  };
+};
+
+// Helper to push current state to history before mutation
+const pushToHistory = (
+  currentPage: Block[],
+  currentGlobalStyles: GlobalStyles,
+  currentHistory: HistoryState
+): HistoryState => {
+  const currentSnapshot = createSnapshot(currentPage, currentGlobalStyles);
+  const { past, present } = currentHistory;
+  
+  // Add current present to past (limit size)
+  const newPast = [...past, present];
+  if (newPast.length > MAX_HISTORY_SIZE) {
+    newPast.shift(); // Remove oldest entry
+  }
+  
+  return {
+    past: newPast,
+    present: currentSnapshot,
+    future: [], // Clear future on new action
+  };
+};
+
+// Initialize history with current state
+const initialSnapshot = createSnapshot(initialState.page, initialState.globalStyles);
+const initialHistory: HistoryState = {
+  past: [],
+  present: initialSnapshot,
+  future: [],
+};
+
 export const usePageStore = create<PageState>((set, get) => ({
   page: initialState.page,
   selectedId: initialState.selectedId,
   globalStyles: initialState.globalStyles,
+  history: initialHistory,
 
-  addBlock: (type: string) =>
-    set((state) => {
+  addBlock: (type: string) => {
+    const state = get();
+    const newHistory = pushToHistory(state.page, state.globalStyles, state.history);
+    
+    set((currentState) => {
       const newPage = [
-        ...state.page,
+        ...currentState.page,
         { id: nanoid(), type, props: DEFAULT_PROPS_MAP[type] || {} },
       ];
-      saveState(newPage, state.globalStyles);
-      return { page: newPage };
-    }),
+      saveState(newPage, currentState.globalStyles);
+      return { 
+        page: newPage,
+        history: newHistory,
+      };
+    });
+  },
 
-  updateBlock: (id, props) =>
-    set((state) => {
-      const newPage = state.page.map((block) => {
+  updateBlock: (id, props) => {
+    const state = get();
+    const newHistory = pushToHistory(state.page, state.globalStyles, state.history);
+    
+    set((currentState) => {
+      const newPage = currentState.page.map((block) => {
         if (block.id === id) {
           // For features array
           const updatedProps = { ...block.props };
@@ -120,36 +193,124 @@ export const usePageStore = create<PageState>((set, get) => ({
         }
         return block;
       });
-      saveState(newPage, state.globalStyles);
-      return { page: newPage };
-    }),
+      saveState(newPage, currentState.globalStyles);
+      return { 
+        page: newPage,
+        history: newHistory,
+      };
+    });
+  },
 
   selectBlock: (id) => set({ selectedId: id }),
 
   deleteBlock: (id) => {
+    const state = get();
+    const newHistory = pushToHistory(state.page, state.globalStyles, state.history);
+    
     let newPage: Block[];
     let globalStyles: GlobalStyles;
     
-    set((state) => {
-      newPage = state.page.filter((block) => block.id !== id);
-      globalStyles = state.globalStyles;
-      return { page: newPage, selectedId: null };
+    set((currentState) => {
+      newPage = currentState.page.filter((block) => block.id !== id);
+      globalStyles = currentState.globalStyles;
+      return { 
+        page: newPage, 
+        selectedId: null,
+        history: newHistory,
+      };
     });
     
     saveState(newPage!, globalStyles!);
   },
 
   reorderBlocks: (newOrder) => {
-    saveState(newOrder, get().globalStyles);
-    set({ page: newOrder });
+    const state = get();
+    const newHistory = pushToHistory(state.page, state.globalStyles, state.history);
+    
+    saveState(newOrder, state.globalStyles);
+    set({ 
+      page: newOrder,
+      history: newHistory,
+    });
   },
 
-  setFontFamily: (fontFamily) =>
-    set((state) => {
-      const updatedStyles = { ...state.globalStyles, fontFamily };
-      saveState(state.page, updatedStyles);
-      return { globalStyles: updatedStyles };
-    }),
+  setFontFamily: (fontFamily) => {
+    const state = get();
+    const newHistory = pushToHistory(state.page, state.globalStyles, state.history);
+    
+    set((currentState) => {
+      const updatedStyles = { ...currentState.globalStyles, fontFamily };
+      saveState(currentState.page, updatedStyles);
+      return { 
+        globalStyles: updatedStyles,
+        history: newHistory,
+      };
+    });
+  },
+
+  undo: () => {
+    const state = get();
+    const { past, present, future } = state.history;
+    
+    if (past.length === 0) return; // Nothing to undo
+    
+    // Move present to future
+    const newFuture = [present, ...future];
+    // Pop from past
+    const previousSnapshot = past[past.length - 1];
+    const newPast = past.slice(0, -1);
+    
+    const newHistory: HistoryState = {
+      past: newPast,
+      present: previousSnapshot,
+      future: newFuture,
+    };
+    
+    const newState = applySnapshot(previousSnapshot);
+    saveState(newState.page, newState.globalStyles);
+    
+    set({
+      ...newState,
+      selectedId: null, // Clear selection on undo
+      history: newHistory,
+    });
+  },
+
+  redo: () => {
+    const state = get();
+    const { past, present, future } = state.history;
+    
+    if (future.length === 0) return; // Nothing to redo
+    
+    // Move present to past
+    const newPast = [...past, present];
+    // Pop from future
+    const nextSnapshot = future[0];
+    const newFuture = future.slice(1);
+    
+    const newHistory: HistoryState = {
+      past: newPast,
+      present: nextSnapshot,
+      future: newFuture,
+    };
+    
+    const newState = applySnapshot(nextSnapshot);
+    saveState(newState.page, newState.globalStyles);
+    
+    set({
+      ...newState,
+      selectedId: null, // Clear selection on redo
+      history: newHistory,
+    });
+  },
+
+  canUndo: () => {
+    return get().history.past.length > 0;
+  },
+
+  canRedo: () => {
+    return get().history.future.length > 0;
+  },
 }));
 
 // Listen for storage changes to sync across tabs

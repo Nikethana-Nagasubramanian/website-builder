@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePageStore } from "../store/usePageStore";
 import { BLOCKS } from "./rendered-blocks/blockDefinitions";
-import { DndContext, closestCenter, closestCorners, DragOverlay, useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
+import { DndContext, closestCorners, DragOverlay, useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
 import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import { 
   SortableContext, 
