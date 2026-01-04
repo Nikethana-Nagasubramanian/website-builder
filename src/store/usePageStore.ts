@@ -67,36 +67,16 @@ const loadState = (): { page: Block[]; selectedId: string | null; globalStyles: 
 
 const saveState = (page: Block[], globalStyles: GlobalStyles) => {
   try {
-    const dataToSave = JSON.stringify({ page, globalStyles });
-    const dataSize = new Blob([dataToSave]).size;
-    const dataSizeMB = (dataSize / 1024 / 1024).toFixed(2);
-    
-    console.log(`Saving to localStorage - Size: ${dataSizeMB}MB`);
-    
-    // Check localStorage quota before saving
-    try {
-      const testKey = '__quota_test__';
-      localStorage.setItem(testKey, 'test');
-      localStorage.removeItem(testKey);
-    } catch (e) {
-      console.error("localStorage quota may be full:", e);
-      // Don't alert here as it might be too frequent - let the actual save attempt handle it
-    }
-    
-    localStorage.setItem(STORAGE_KEY, dataToSave);
-    console.log("Successfully saved to localStorage");
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ page, globalStyles }));
   } catch (error) {
     console.error("Failed to save state to localStorage:", error);
     if (error instanceof DOMException) {
       if (error.code === 22 || error.name === 'QuotaExceededError') {
         const errorMessage = "Storage quota exceeded! The image is too large. Please use a smaller image or remove other content.";
         console.error(errorMessage);
-        // Use setTimeout to avoid blocking the UI thread
         setTimeout(() => {
           alert(errorMessage);
         }, 100);
-      } else {
-        console.error(`Storage error: ${error.message}`);
       }
     }
   }
@@ -148,6 +128,62 @@ const initialHistory: HistoryState = {
   future: [],
 };
 
+// Debounce utility for history updates - ensures only one history entry per typing session
+// This prevents creating a separate undo state for each keystroke (e.g., "Hello" = 1 undo, not 5)
+let historyDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+// Store the state snapshot BEFORE the first update in a typing session
+let pendingHistorySnapshot: StateSnapshot | null = null;
+
+const debounceHistoryUpdate = (beforeSnapshot: StateSnapshot, callback: () => void, delay: number = 800) => {
+  // On the first update in a typing session, capture the "before" state
+  if (pendingHistorySnapshot === null) {
+    pendingHistorySnapshot = beforeSnapshot;
+  }
+  
+  // Clear any existing timer - this resets the countdown on each keystroke
+  if (historyDebounceTimer) {
+    clearTimeout(historyDebounceTimer);
+  }
+  
+  // Start a new timer - only executes after delay ms of no typing
+  historyDebounceTimer = setTimeout(() => {
+    callback();
+    historyDebounceTimer = null;
+    pendingHistorySnapshot = null; // Reset after saving
+  }, delay);
+};
+
+// Flush any pending history update (used when non-debounced actions occur)
+const flushPendingHistoryUpdate = (getState: () => PageState) => {
+  if (historyDebounceTimer) {
+    clearTimeout(historyDebounceTimer);
+    historyDebounceTimer = null;
+    
+    // If there's a pending snapshot, save it to history now
+    if (pendingHistorySnapshot) {
+      const currentState = getState();
+      const { past, present } = currentState.history;
+      
+      const newPast = [...past, present];
+      if (newPast.length > MAX_HISTORY_SIZE) {
+        newPast.shift();
+      }
+      
+      const finalSnapshot = createSnapshot(currentState.page, currentState.globalStyles);
+      const finalHistory: HistoryState = {
+        past: newPast,
+        present: finalSnapshot,
+        future: [],
+      };
+      
+      usePageStore.setState({ history: finalHistory });
+      saveState(currentState.page, currentState.globalStyles);
+      
+      pendingHistorySnapshot = null;
+    }
+  }
+};
+
 export const usePageStore = create<PageState>((set, get) => ({
   page: initialState.page,
   selectedId: initialState.selectedId,
@@ -155,6 +191,9 @@ export const usePageStore = create<PageState>((set, get) => ({
   history: initialHistory,
 
   addBlock: (type: string) => {
+    // Flush any pending history updates from typing
+    flushPendingHistoryUpdate(get);
+    
     const state = get();
     const newHistory = pushToHistory(state.page, state.globalStyles, state.history);
     
@@ -173,37 +212,55 @@ export const usePageStore = create<PageState>((set, get) => ({
 
   updateBlock: (id, props) => {
     const state = get();
-    const newHistory = pushToHistory(state.page, state.globalStyles, state.history);
+    // Capture the state BEFORE the update for history (only on first update in typing session)
+    // If there's already a pending snapshot, reuse it (same typing session)
+    const beforeSnapshot = pendingHistorySnapshot || createSnapshot(state.page, state.globalStyles);
     
+    // 1. First, update the state immediately so the UI is fast
     set((currentState) => {
       const newPage = currentState.page.map((block) => {
         if (block.id === id) {
-          // For features array
-          const updatedProps = { ...block.props };
-          if (props.features) {
-            updatedProps.features = props.features;
-          }
-          // Merge other props
-          Object.keys(props).forEach(key => {
-            if (key !== 'features') {
-              updatedProps[key] = props[key];
-            }
-          });
-          return { ...block, props: updatedProps };
+          return { ...block, props: { ...block.props, ...props } };
         }
         return block;
       });
-      saveState(newPage, currentState.globalStyles);
-      return { 
-        page: newPage,
-        history: newHistory,
-      };
+      
+      // 2. DEBOUNCE the history snapshot - only save after user stops typing
+      // This ensures "Hello" is one undo action, not 5 separate ones
+      // We capture the "before" state on the first update, then save it after debounce
+      debounceHistoryUpdate(beforeSnapshot, () => {
+        const currentState = get();
+        const { past, present } = currentState.history;
+        
+        // Build new history:
+        // - Move current present to past (this preserves the state before any updates)
+        // - Current state (after all updates) becomes the new present
+        const newPast = [...past, present];
+        if (newPast.length > MAX_HISTORY_SIZE) {
+          newPast.shift();
+        }
+        
+        const finalSnapshot = createSnapshot(currentState.page, currentState.globalStyles);
+        const finalHistory: HistoryState = {
+          past: newPast,
+          present: finalSnapshot, // Current state after all updates
+          future: [], // Clear future on new action
+        };
+        
+        set({ history: finalHistory });
+        saveState(currentState.page, currentState.globalStyles);
+      }, 800); // Wait 800ms of silence before saving to history
+  
+      return { page: newPage };
     });
   },
 
   selectBlock: (id) => set({ selectedId: id }),
 
   deleteBlock: (id) => {
+    // Flush any pending history updates from typing
+    flushPendingHistoryUpdate(get);
+    
     const state = get();
     const newHistory = pushToHistory(state.page, state.globalStyles, state.history);
     
@@ -224,6 +281,9 @@ export const usePageStore = create<PageState>((set, get) => ({
   },
 
   reorderBlocks: (newOrder) => {
+    // Flush any pending history updates from typing
+    flushPendingHistoryUpdate(get);
+    
     const state = get();
     const newHistory = pushToHistory(state.page, state.globalStyles, state.history);
     
@@ -235,6 +295,9 @@ export const usePageStore = create<PageState>((set, get) => ({
   },
 
   setFontFamily: (fontFamily) => {
+    // Flush any pending history updates from typing
+    flushPendingHistoryUpdate(get);
+    
     const state = get();
     const newHistory = pushToHistory(state.page, state.globalStyles, state.history);
     
