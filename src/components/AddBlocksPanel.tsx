@@ -21,7 +21,7 @@ export function AddBlocksPanel() {
               </div>
               <div>
                 <div className="font-medium text-gray-900">{blockType.name}</div>
-                <div className="text-sm text-gray-500">{blockType.description}</div>
+                {/* <div className="text-sm text-gray-500">{blockType.description}</div> */}
               </div>
             </div>
             </button>

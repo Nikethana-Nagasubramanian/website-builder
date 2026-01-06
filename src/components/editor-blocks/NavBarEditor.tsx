@@ -118,8 +118,6 @@ export function NavBarEditor({ block }: { block: any }) {
           className="w-full"
         />
       </div>
-      
-      <ActionButton variant="delete" block={block} label="Delete Navigation Bar" className="w-full" />
     </div>
   );
 }

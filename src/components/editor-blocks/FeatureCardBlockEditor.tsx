@@ -221,8 +221,6 @@ export function FeatureCardBlockEditor({ block }: { block: any }) {
           className="w-full"
         />
       </div>
-
-      <ActionButton variant="delete" block={block} label="Delete Feature Card" className="w-full" />
     </div>
   );
 }

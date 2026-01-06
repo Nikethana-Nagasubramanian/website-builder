@@ -42,9 +42,9 @@ function Editor() {
   }, [undo, redo]);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-white">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#F0F1F1] p-2 gap-2">
       <LeftPanel />
-      <div className="flex-1 flex flex-col relative">
+      <div className="flex-1 flex flex-col relative overflow-hidden">
       <Canvas />
       </div>
       <EditBlocksPanel />

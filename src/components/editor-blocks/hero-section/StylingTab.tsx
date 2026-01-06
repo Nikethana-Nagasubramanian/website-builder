@@ -18,7 +18,7 @@ const TEXT_COLORS = [
 export function StylingTab({ block }: StylingTabProps) {
   const updateBlock = usePageStore((s) => s.updateBlock);
 
-  const currentTextColor = block.props.textColor || "text-white";
+  const currentTextColor = block.props.textColor || "text-black";
 
   const handleColorSelect = (color: string) => {
     updateBlock(block.id, { textColor: color });
@@ -27,31 +27,27 @@ export function StylingTab({ block }: StylingTabProps) {
   return (
     <div className="space-y-4" id="styling-panel" role="tabpanel" aria-labelledby="styling-tab">
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 mb-3">
           Text Color
         </label>
-        <div className="grid grid-cols-4 gap-3">
+        <div className="flex flex-wrap gap-3">
           {TEXT_COLORS.map((color) => (
             <button
               key={color.value}
               type="button"
               onClick={() => handleColorSelect(color.value)}
-              className={`relative h-16 rounded-lg border-2 overflow-hidden transition-all ${
+              className={`w-6 h-6 rounded-full border border-gray-200 transition-all ${
                 currentTextColor === color.value
-                  ? "ring-2 ring-blue-500 border-blue-500"
-                  : "border-gray-300 hover:border-gray-400"
-              }`}
+                  ? "ring-2 ring-blue-500 ring-offset-2"
+                  : "hover:scale-110"
+              } ${color.preview}`}
+              title={color.label}
               aria-label={`Select ${color.label} text color`}
-            >
-              <div className={`w-full h-full ${color.preview}`} />
-              <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white text-xs p-1 text-center">
-                {color.label}
-              </div>
-            </button>
+            />
           ))}
         </div>
-        <p className="text-xs text-gray-500 mt-2">
-          Selected: <span className="font-medium">{TEXT_COLORS.find(c => c.value === currentTextColor)?.label || "White"}</span>
+        <p className="text-xs text-gray-500 mt-3 italic">
+          Selected: <span className="font-medium">{TEXT_COLORS.find(c => c.value === currentTextColor)?.label || "Black"}</span>
         </p>
       </div>
     </div>

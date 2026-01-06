@@ -36,7 +36,7 @@ export function HeroSection({
     title, 
     description, 
     bgImage, 
-    textColor = "text-white",
+    textColor = "text-black",
     padding = "8",
     spacing = "4",
     textAlign = "center",

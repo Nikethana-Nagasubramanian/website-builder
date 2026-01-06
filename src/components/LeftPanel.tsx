@@ -4,7 +4,7 @@ import { AddBlocksPanel } from "./AddBlocksPanel";
 // import { TabNavigation } from "./reusable-components/TabNavigation";
 import { ActionButton } from "./reusable-components/ActionButton";
 import { usePageStore } from "../store/usePageStore";
-import { Eye, ArrowCounterClockwise, ArrowClockwise } from "@phosphor-icons/react";
+import { Eye } from "@phosphor-icons/react";
 
 const FONT_OPTIONS = [
   { label: "Inter", value: "'Inter', sans-serif" },
@@ -17,10 +17,6 @@ export function LeftPanel() {
   const page = usePageStore((s) => s.page);
   const globalStyles = usePageStore((s) => s.globalStyles);
   const setFontFamily = usePageStore((s) => s.setFontFamily);
-  const undo = usePageStore((s) => s.undo);
-  const redo = usePageStore((s) => s.redo);
-  const canUndo = usePageStore((s) => s.canUndo());
-  const canRedo = usePageStore((s) => s.canRedo());
   
   const canPreview = page.length > 2;
 
@@ -48,7 +44,7 @@ export function LeftPanel() {
   // ];
 
   return (
-    <div className="w-80 border-r bg-white sticky top-0 h-screen overflow-hidden flex flex-col">
+    <div className="w-80 bg-white rounded-[6px] shadow-md overflow-hidden flex flex-col h-full">
       {/* <div className="p-3 bg-white border-b border-gray-200 flex-shrink-0">
         <TabNavigation tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
       </div> */}
@@ -61,42 +57,8 @@ export function LeftPanel() {
         >
           <AddBlocksPanel />
         </div>
-        {/* Reorder panel removed - drag handles now appear on hover in Canvas */}
       </div>
       <div className="p-4 border-t border-gray-100 bg-white flex-shrink-0">
-        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-          History
-        </h3>
-        <div className="flex gap-2 mb-4">
-          <button
-            type="button"
-            onClick={undo}
-            disabled={!canUndo}
-            className={`flex-1 px-3 py-2 rounded-lg border text-sm transition-colors flex items-center justify-center gap-2 ${
-              canUndo
-                ? "bg-white text-gray-700 border-gray-300 hover:border-gray-400 hover:bg-gray-50"
-                : "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
-            }`}
-            title="Undo (Ctrl+Z)"
-          >
-            <ArrowCounterClockwise size={16} />
-            <span>Undo</span>
-          </button>
-          <button
-            type="button"
-            onClick={redo}
-            disabled={!canRedo}
-            className={`flex-1 px-3 py-2 rounded-lg border text-sm transition-colors flex items-center justify-center gap-2 ${
-              canRedo
-                ? "bg-white text-gray-700 border-gray-300 hover:border-gray-400 hover:bg-gray-50"
-                : "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed"
-            }`}
-            title="Redo (Ctrl+Shift+Z or Ctrl+Y)"
-          >
-            <ArrowClockwise size={16} />
-            <span>Redo</span>
-          </button>
-        </div>
         <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
           Global Styles
         </h3>

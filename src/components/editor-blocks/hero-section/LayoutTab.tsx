@@ -4,12 +4,11 @@ type LayoutTabProps = {
   block: { id: string; props: any };
 };
 
-const SPACING_OPTIONS = [
-  { value: "0", label: "None" },
-  { value: "4", label: "Small (1rem)" },
-  { value: "8", label: "Medium (2rem)" },
-  { value: "12", label: "Large (3rem)" },
-  { value: "16", label: "X-Large (4rem)" },
+const PILL_OPTIONS = [
+  { value: "4", label: "S" },
+  { value: "8", label: "M" },
+  { value: "12", label: "L" },
+  { value: "16", label: "XL" },
 ];
 
 const ALIGNMENT_OPTIONS = [
@@ -29,62 +28,22 @@ export function LayoutTab({ block }: LayoutTabProps) {
   const updateBlock = usePageStore((s) => s.updateBlock);
 
   return (
-    <div className="space-y-4" id="layout-panel" role="tabpanel" aria-labelledby="layout-tab">
+    <div className="space-y-6" id="layout-panel" role="tabpanel" aria-labelledby="layout-tab">
       <div>
-        <label htmlFor="hero-padding-input" className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 mb-3">
           Padding
         </label>
-        <select
-          id="hero-padding-input"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          style={{ fontSize: '14px' }}
-          value={block.props.padding || "8"}
-          onChange={(e) => updateBlock(block.id, { padding: e.target.value })}
-        >
-          {SPACING_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label htmlFor="hero-spacing-input" className="block text-sm font-medium text-gray-700 mb-2">
-          Content Spacing
-        </label>
-        <select
-          id="hero-spacing-input"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          style={{ fontSize: '14px' }}
-          value={block.props.spacing || "4"}
-          onChange={(e) => updateBlock(block.id, { spacing: e.target.value })}
-        >
-          {SPACING_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Text Alignment
-        </label>
         <div className="flex gap-2">
-          {ALIGNMENT_OPTIONS.map((option) => (
+          {PILL_OPTIONS.map((option) => (
             <button
               key={option.value}
               type="button"
-              onClick={() => updateBlock(block.id, { textAlign: option.value })}
-              className={`inline-flex flex-1 items-center justify-center whitespace-nowrap text-sm font-medium h-8 px-3 rounded-md border transition-[background-color,color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 ${
-                (block.props.textAlign || "center") === option.value
-                  ? "bg-blue-500 text-white border-blue-500"
-                  : "bg-white text-gray-700 border-gray-300 hover:border-gray-400"
+              onClick={() => updateBlock(block.id, { padding: option.value })}
+              className={`flex-1 h-9 flex items-center justify-center rounded-full border text-sm font-medium leading-none transition-all ${
+                (block.props.padding || "8") === option.value
+                  ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                  : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
               }`}
-              style={{ fontSize: "14px" }}
-              aria-label={`Align text ${option.label.toLowerCase()}`}
             >
               {option.label}
             </button>
@@ -93,22 +52,82 @@ export function LayoutTab({ block }: LayoutTabProps) {
       </div>
 
       <div>
-        <label htmlFor="hero-height-input" className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 mb-3">
+          Content Spacing
+        </label>
+        <div className="flex gap-2">
+          {PILL_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => updateBlock(block.id, { spacing: option.value })}
+              className={`flex-1 h-9 flex items-center justify-center rounded-full border text-sm font-medium leading-none transition-all ${
+                (block.props.spacing || "4") === option.value
+                  ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                  : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-3">
+          Text Alignment
+        </label>
+        <div className="flex gap-2">
+          {ALIGNMENT_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => updateBlock(block.id, { textAlign: option.value })}
+              className={`flex-1 h-9 flex items-center justify-center rounded-md border text-sm font-medium leading-none transition-all ${
+                (block.props.textAlign || "center") === option.value
+                  ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                  : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-3">
           Section Height
         </label>
-        <select
-          id="hero-height-input"
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          style={{ fontSize: '14px' }}
-          value={block.props.sectionHeight || "tall"}
-          onChange={(e) => updateBlock(block.id, { sectionHeight: e.target.value })}
-        >
+        <div className="flex flex-wrap gap-2">
           {HEIGHT_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => updateBlock(block.id, { sectionHeight: option.value })}
+              className={`flex-1 min-w-[80px] h-9 flex items-center justify-center rounded-md border text-xs font-medium leading-none transition-all ${
+                (block.props.sectionHeight || "tall") === option.value
+                  ? "bg-blue-600 text-white border-blue-600 shadow-sm"
+                  : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+              }`}
+            >
               {option.label}
-            </option>
+            </button>
           ))}
-        </select>
+        </div>
+      </div>
+
+      <div className="bg-blue-50 rounded-xl p-4 border border-blue-100">
+        <div className="text-xs font-bold text-blue-800 uppercase tracking-wider mb-3">Size Legend</div>
+        <div className="flex justify-between items-center text-[10px] text-blue-700 font-medium">
+          <div className="flex gap-1.5 items-baseline"><span>S:</span> <span className="font-bold">4px</span></div>
+          <div className="w-px h-2.5 bg-blue-200" />
+          <div className="flex gap-1.5 items-baseline"><span>M:</span> <span className="font-bold">8px</span></div>
+          <div className="w-px h-2.5 bg-blue-200" />
+          <div className="flex gap-1.5 items-baseline"><span>L:</span> <span className="font-bold">12px</span></div>
+          <div className="w-px h-2.5 bg-blue-200" />
+          <div className="flex gap-1.5 items-baseline"><span>XL:</span> <span className="font-bold">16px</span></div>
+        </div>
       </div>
     </div>
   );
