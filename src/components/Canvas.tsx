@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { usePageStore } from "../store/usePageStore";
 import { BLOCKS } from "./rendered-blocks/blockDefinitions";
-import { DndContext, closestCenter, closestCorners, DragOverlay, useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
+import { DndContext, closestCorners, DragOverlay, useSensor, useSensors, PointerSensor } from "@dnd-kit/core";
 import type { DragEndEvent, DragStartEvent } from "@dnd-kit/core";
 import { 
   SortableContext, 
@@ -65,8 +65,10 @@ function SortableBlockWrapper({
           onSelect(block.id);
         }
       }}
-      className={`relative group mb-4 ${
-        block.id === selectedId ? "ring-2 ring-blue-500 ring-offset-2" : ""
+      className={`relative group mb-4 transition-colors ${
+        block.id === selectedId 
+          ? "ring-2 ring-blue-500 ring-offset-2" 
+          : "hover:bg-gray-50/50"
       }`}
     >
       {/* Always render content to preserve height during drag */}
@@ -76,11 +78,15 @@ function SortableBlockWrapper({
         <div
           {...attributes}
           {...listeners}
-          className="absolute right-0 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing z-10 p-2 hover:bg-gray-100 rounded"
+          className="absolute -right-3 top-4 z-50
+        flex h-8 w-6 cursor-grab items-center justify-center 
+        rounded-r-md bg-gray-200 text-white shadow-md
+        opacity-0 group-hover:opacity-100 transition-opacity
+        active:cursor-grabbing"
           aria-label="Drag to reorder"
           onClick={(e) => e.stopPropagation()}
         >
-          <DotsSixVertical size={20} weight="bold" className="text-gray-400 hover:text-gray-600" />
+          <DotsSixVertical size={20} weight="bold" className="text-gray-700 hover:text-gray-900" />
         </div>
       )}
     </div>
@@ -91,6 +97,7 @@ export function Canvas() {
   const page = usePageStore((s) => s.page);
   const selectBlock = usePageStore((s) => s.selectBlock);
   const selectedId = usePageStore((s) => s.selectedId);
+  const deleteBlock = usePageStore((s) => s.deleteBlock);
   const reorderBlocks = usePageStore((s) => s.reorderBlocks);
   const fontFamily = usePageStore((s) => s.globalStyles.fontFamily);
   
@@ -105,6 +112,27 @@ export function Canvas() {
       },
     })
   );
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if user is typing in an input, textarea, or contentEditable
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === "INPUT" ||
+        target.tagName === "TEXTAREA" ||
+        target.isContentEditable
+      ) {
+        return;
+      }
+
+      if ((e.key === "Delete" || e.key === "Backspace") && selectedId) {
+        deleteBlock(selectedId);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedId, deleteBlock]);
 
   useEffect(() => {
     console.log("scrolling to last block");
@@ -145,60 +173,90 @@ export function Canvas() {
 
   return (
     <div
-      className="flex-1 overflow-y-auto p-6 bg-white"
+      className="flex-1 overflow-y-auto p-5 bg-[#F0F1F1]"
       role="main"
       aria-label="Canvas area"
       style={{ fontFamily }}
     >
-      {page.length === 0 ? (
-        <div className="text-center py-12 text-gray-500" aria-live="polite">
-          <p>No blocks added yet. Use the sidebar to add blocks.</p>
-        </div>
-      ) : (
-        <DndContext 
-          sensors={sensors}
-          collisionDetection={closestCorners} 
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={page.map((b) => b.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <div role="list" aria-label="Page blocks">
-              {page.map((block, index) => {
-                const isLast = index === page.length - 1;
-
-                return (
-                  <div key={block.id} data-id={block.id}>
-                    <SortableBlockWrapper
-                      block={block}
-                      isLast={isLast}
-                      selectedId={selectedId}
-                      onSelect={selectBlock}
-                      lastBlockRef={lastBlockRef}
-                    />
-                  </div>
-                );
-              })}
+      <div className="bg-white min-h-full shadow-md rounded-sm p-4">
+        {page.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center space-y-6" aria-live="polite">
+            <div className="space-y-2">
+              <h3 className="text-xl font-bold text-gray-900">Let's build your website!</h3>
             </div>
-          </SortableContext>
-          <DragOverlay>
-            {activeBlock && ActiveBlockComponent && (
-              <div 
-                className="opacity-90 rotate-2 shadow-2xl"
-                style={{ 
-                  width: '100%',
-                  minWidth: '400px',
-                  maxWidth: '100%'
-                }}
-              >
-                <ActiveBlockComponent {...activeBlock.props} />
+            
+            <div className="grid grid-cols-1 gap-4 text-left max-w-sm w-full">
+              <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                <div>
+                  <p className="font-semibold text-sm text-gray-900">Add content</p>
+                  <p className="text-xs text-gray-500">Pick a block from the left panel to add it to your page.</p>
+                </div>
               </div>
-            )}
-          </DragOverlay>
-        </DndContext>
-      )}
+              
+              <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                <div>
+                  <p className="font-semibold text-sm text-gray-900">Customize</p>
+                  <p className="text-xs text-gray-500">Click on any block to edit its text, images, and layout in the right panel.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                <div>
+                  <p className="font-semibold text-sm text-gray-900">Reorder & Delete</p>
+                  <p className="text-xs text-gray-500">Hover over a block to move it, or press the Delete key to remove it.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <DndContext 
+            sensors={sensors}
+            collisionDetection={closestCorners} 
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={page.map((b) => b.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div role="list" aria-label="Page blocks">
+                {page.map((block, index) => {
+                  const isLast = index === page.length - 1;
+
+                  return (
+                    <div key={block.id} data-id={block.id}>
+                      <SortableBlockWrapper
+                        block={block}
+                        isLast={isLast}
+                        selectedId={selectedId}
+                        onSelect={selectBlock}
+                        lastBlockRef={lastBlockRef}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </SortableContext>
+            <DragOverlay>
+              {activeBlock && ActiveBlockComponent && (
+                <div 
+                  className="opacity-90 rotate-2 shadow-2xl"
+                  style={{ 
+                    width: '100%',
+                    minWidth: '400px',
+                    maxWidth: '100%'
+                  }}
+                >
+                  <ActiveBlockComponent {...activeBlock.props} />
+                </div>
+              )}
+            </DragOverlay>
+          </DndContext>
+        )}
+      </div>
     </div>
   );
 }

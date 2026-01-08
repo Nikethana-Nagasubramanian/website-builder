@@ -1,6 +1,5 @@
 import { usePageStore } from "../../store/usePageStore";
 import { TextField } from "../reusable-components/TextField";
-import { ActionButton } from "../reusable-components/ActionButton";
 
 export function TestimonialSectionEditor({ block }: { block: any }) {
   const updateBlock = usePageStore((s) => s.updateBlock);
@@ -39,7 +38,6 @@ export function TestimonialSectionEditor({ block }: { block: any }) {
           placeholder="Enter position..."
           description="Enter the customer's position or job title"
         />
-     <ActionButton variant="delete" block={block} label="Delete Testimonial" className="w-full" />
     </div>
   );
 }

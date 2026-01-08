@@ -9,7 +9,7 @@ import { FooterEditor } from "../editor-blocks/FooterEditor";
 import { NavBar } from "./NavBar";
 import { Footer } from "./Footer";
 import { Quotes, Cards, Star, Rectangle } from "@phosphor-icons/react";
-import hero1 from "../../assets/background1.jpg";
+import hero8 from "../../assets/background8.jpg";
 import brandImage from "../../assets/brand-image.jpg";
 import workflowImage from "../../assets/automation-image.jpg";
 import performanceImage from "../../assets/performance-image.jpg";
@@ -52,8 +52,8 @@ export const BLOCK_DEFINITIONS: Record<string, BlockDefinition> = {
     defaultProps: {
       title: "Welcome to our website",
       description: "This is a description of our website",
-      bgImage: hero1,
-      textColor: "text-white",
+      bgImage: hero8,
+      textColor: "text-black",
       padding: "8",
       spacing: "4",
       textAlign: "center",
@@ -102,7 +102,7 @@ export const BLOCK_DEFINITIONS: Record<string, BlockDefinition> = {
     component: TestimonialSection,
     editor: TestimonialSectionEditor,
     defaultProps: {
-      text: "Gradial is a great tool and has saved us a lot of time and money.",
+      text: "Cursor is a great tool and has saved us a lot of time and money.",
       customerName: "Daniel O'Connell",
       company: "Alpha Systems",
       position: "VP of Engineering",

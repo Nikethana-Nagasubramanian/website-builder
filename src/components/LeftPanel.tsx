@@ -1,7 +1,7 @@
-import { useState } from "react";
+// import { useState } from "react";
 import { AddBlocksPanel } from "./AddBlocksPanel";
 // import { ReorderBlocksPanel } from "./ReorderBlocksPanel"; // Kept for potential future use
-import { TabNavigation } from "./reusable-components/TabNavigation";
+// import { TabNavigation } from "./reusable-components/TabNavigation";
 import { ActionButton } from "./reusable-components/ActionButton";
 import { usePageStore } from "../store/usePageStore";
 import { Eye } from "@phosphor-icons/react";
@@ -13,7 +13,7 @@ const FONT_OPTIONS = [
 ];
 
 export function LeftPanel() {
-  const [activeTab, setActiveTab] = useState<"add">("add");
+  // const [activeTab, setActiveTab] = useState<"add">("add");
   const page = usePageStore((s) => s.page);
   const globalStyles = usePageStore((s) => s.globalStyles);
   const setFontFamily = usePageStore((s) => s.setFontFamily);
@@ -36,18 +36,18 @@ export function LeftPanel() {
     }
   };
 
-  type TabType = "add"; // "reorder" removed - drag handles now in Canvas
+  // type TabType = "add"; // "reorder" removed - drag handles now in Canvas
 
-  const tabs = [
-    { id: "add" as TabType, label: "Add" },
-    // Reorder tab removed - drag handles now appear on hover in Canvas
-  ];
+  // const tabs = [
+  //   { id: "add" as TabType, label: "Add" },
+  //   // Reorder tab removed - drag handles now appear on hover in Canvas
+  // ];
 
   return (
-    <div className="w-80 border-r bg-white sticky top-0 h-screen overflow-hidden flex flex-col">
-      <div className="p-3 bg-white border-b border-gray-200 flex-shrink-0">
+    <div className="w-80 bg-white rounded-[6px] shadow-md overflow-hidden flex flex-col h-full">
+      {/* <div className="p-3 bg-white border-b border-gray-200 flex-shrink-0">
         <TabNavigation tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
-      </div>
+      </div> */}
       <div className="flex-1 overflow-y-auto">
         <div 
           id="add-panel" 
@@ -57,7 +57,6 @@ export function LeftPanel() {
         >
           <AddBlocksPanel />
         </div>
-        {/* Reorder panel removed - drag handles now appear on hover in Canvas */}
       </div>
       <div className="p-4 border-t border-gray-100 bg-white flex-shrink-0">
         <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
