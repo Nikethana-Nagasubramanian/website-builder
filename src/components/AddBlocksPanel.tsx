@@ -6,7 +6,8 @@ export function AddBlocksPanel() {
 
   return (
     <div className="p-4" aria-label="Add block sidebar">
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Add Block</h2>
+      <h2 className="text-lg font-semibold text-gray-900 mb-1">Add Block</h2>
+      <p className="text-xs text-gray-500 mb-4 italic">Choose a block from this list to add to your webpage</p>
       <div className="space-y-2" role="list" aria-label="Available block types">
         {BLOCK_TYPES.map((blockType) => (
           <div key={blockType.id} role="listitem">

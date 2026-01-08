@@ -180,8 +180,36 @@ export function Canvas() {
     >
       <div className="bg-white min-h-full shadow-md rounded-sm p-4">
         {page.length === 0 ? (
-          <div className="text-center py-12 text-gray-500" aria-live="polite">
-            <p>No blocks added yet. Use the sidebar to add blocks.</p>
+          <div className="flex flex-col items-center justify-center py-20 text-center space-y-6" aria-live="polite">
+            <div className="space-y-2">
+              <h3 className="text-xl font-bold text-gray-900">Let's build your website!</h3>
+            </div>
+            
+            <div className="grid grid-cols-1 gap-4 text-left max-w-sm w-full">
+              <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+                <div>
+                  <p className="font-semibold text-sm text-gray-900">Add content</p>
+                  <p className="text-xs text-gray-500">Pick a block from the left panel to add it to your page.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+                <div>
+                  <p className="font-semibold text-sm text-gray-900">Customize</p>
+                  <p className="text-xs text-gray-500">Click on any block to edit its text, images, and layout in the right panel.</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg border border-gray-100">
+                <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                <div>
+                  <p className="font-semibold text-sm text-gray-900">Reorder & Delete</p>
+                  <p className="text-xs text-gray-500">Hover over a block to move it, or press the Delete key to remove it.</p>
+                </div>
+              </div>
+            </div>
           </div>
         ) : (
           <DndContext 

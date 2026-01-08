@@ -9,7 +9,8 @@ export function EditBlocksPanel() {
   return (
     <div className="w-80 bg-white rounded-[6px] shadow-md overflow-hidden flex flex-col h-full">
       <div className="flex-1 overflow-y-auto p-4">
-        <h2 className="text-lg font-semibold mb-6">Edit Block</h2>
+        <h2 className="text-lg font-semibold mb-1">Edit Block</h2>
+        <p className="text-xs text-gray-500 mb-6 italic">Click on any block on your page to edit the fields</p>
         {!block ? (
           <div className="text-center py-12 text-gray-400">
             <Sparkle className="w-12 h-12 mx-auto mb-4 opacity-20" />
@@ -29,23 +30,23 @@ export function EditBlocksPanel() {
       </div>
 
       <div className="p-6 bg-gray-50 border-t border-gray-100 flex-shrink-0">
-        <div className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-4">Keyboard Shortcuts</div>
+        <div className="text-[13px] font-bold text-gray-700 uppercase tracking-widest mb-4">Keyboard Shortcuts</div>
         <div className="space-y-3">
           <div className="flex justify-between items-center text-xs">
-            <span className="text-gray-500 font-medium">Delete block</span>
+            <p className="text-gray-500 font-semibold">Delete block</p>
             <kbd className="px-1.5 py-1 bg-white border border-gray-200 rounded text-gray-700 font-sans shadow-sm text-[10px] font-bold min-w-[32px] text-center">Del</kbd>
           </div>
           <div className="flex justify-between items-center text-xs">
-            <span className="text-gray-500 font-medium">Undo action</span>
+            <p className="text-gray-500 font-semibold">Undo action</p>
             <kbd className="px-1.5 py-1 bg-white border border-gray-200 rounded text-gray-700 font-sans shadow-sm text-[10px] font-bold min-w-[32px] text-center">⌘ Z</kbd>
           </div>
           <div className="flex justify-between items-center text-xs">
-            <span className="text-gray-500 font-medium">Redo action</span>
+            <p className="text-gray-500 font-semibold">Redo action</p>
             <kbd className="px-1.5 py-1 bg-white border border-gray-200 rounded text-gray-700 font-sans shadow-sm text-[10px] font-bold min-w-[32px] text-center">⌘ ⇧ Z</kbd>
           </div>
           <div className="flex justify-between items-center text-xs">
-            <span className="text-gray-500 font-medium">Reorder block</span>
-            <span className="text-[10px] text-gray-400 font-medium italic">Drag handle</span>
+            <p className="text-gray-500 font-semibold">Reorder block</p>
+            <p className="text-[10px] text-gray-400 font-medium italic">Drag handle</p>
           </div>
         </div>
       </div>
