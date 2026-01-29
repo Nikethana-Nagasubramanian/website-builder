@@ -28,7 +28,7 @@ export function NavBar({ logo, id, links = [] }: Props) {
                     <div 
                         key={index} 
                         className="text-gray-700 hover:text-gray-900 cursor-pointer transition-colors"
-                        onClick={(e) => {
+                        onClick={() => {
                             // If it's a hash link, handle smooth scroll
                             if (link.url && link.url.startsWith('#')) {
                                 const targetId = link.url.substring(1);

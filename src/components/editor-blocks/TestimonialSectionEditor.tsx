@@ -1,4 +1,4 @@
-export function TestimonialSectionEditor({ block }: { block: any }) {
+export function TestimonialSectionEditor() {
   return (
     <div className="space-y-4">
         <p className="text-sm text-gray-500 italic">
