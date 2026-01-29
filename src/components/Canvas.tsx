@@ -72,7 +72,7 @@ function SortableBlockWrapper({
       }`}
     >
       {/* Always render content to preserve height during drag */}
-      <Comp {...block.props} />
+      <Comp {...block.props} id={block.id} />
       {/* Drag handle - appears on hover, hidden when dragging */}
       {!isDragging && (
         <div

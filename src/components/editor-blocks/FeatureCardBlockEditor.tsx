@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { usePageStore } from "../../store/usePageStore";
 import { FileUploadField } from "../reusable-components/FileUploadField";
 import { TextField } from "../reusable-components/TextField";
-import { TextAreaField } from "../reusable-components/TextAreaField";
 import { ActionButton } from "../reusable-components/ActionButton";
 import { Plus, Trash } from "@phosphor-icons/react";
 import { compressImage } from "../../utils/imageCompression";
@@ -166,32 +165,7 @@ export function FeatureCardBlockEditor({ block }: { block: any }) {
               </button>
             </div>
 
-            <TextField
-              id={`feature-title-${index}`}
-              label="Title"
-              value={feature.title}
-              onChange={(value) => handleFeatureChange(index, "title", value)}
-              placeholder="Enter feature title..."
-            />
-
-            <TextAreaField
-              id={`feature-description-${index}`}
-              label="Description"
-              rows={4}
-              value={feature.description}
-              onChange={(value) => handleFeatureChange(index, "description", value)}
-              placeholder="Enter feature description..."
-            />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <TextField
-                id={`feature-link-text-${index}`}
-                label="Link Text"
-                value={feature.linkText || "Learn more"}
-                onChange={(value) => handleFeatureChange(index, "linkText", value)}
-                placeholder="'Learn more' or 'Read more'"
-              />
-
+            <div className="grid grid-cols-1 gap-3">
               <TextField
                 id={`feature-link-url-${index}`}
                 label="Link URL"
