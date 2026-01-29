@@ -1,7 +1,11 @@
+import { usePageStore } from "../../store/usePageStore";
+import { InlineTextEditor } from "../reusable-components/InlineTextEditor";
+
 type Props = {
     title: string;
     description: string;
     bgImage: string;
+    id?: string;
     textColor?: string;
     padding?: string;
     spacing?: string;
@@ -36,12 +40,14 @@ export function HeroSection({
     title, 
     description, 
     bgImage, 
+    id,
     textColor = "text-black",
     padding = "8",
     spacing = "4",
     textAlign = "center",
     sectionHeight = "tall",
 }: Props) {
+    const updateBlock = usePageStore((s) => s.updateBlock);
     const paddingClass = PADDING_MAP[padding] || "p-8";
     const spacingClass = SPACING_MAP[spacing] || "gap-4";
     const alignmentClass = textAlign === "left" ? "items-start text-left" : 
@@ -54,8 +60,18 @@ export function HeroSection({
             <img src={bgImage} alt={title} className="absolute inset-0 w-full h-full object-cover" />
             <div className={`absolute inset-0 z-10 flex flex-col justify-center ${alignmentClass} ${paddingClass}`}>
                 <div className={`flex flex-col ${spacingClass} max-w-[600px] ${textAlign === "center" ? "mx-auto" : textAlign === "right" ? "ml-auto" : ""}`}>
-                    <h1 className={`text-6xl font-bold ${textColor}`}>{title}</h1>
-                    <p className={`text-2xl ${textColor}`}>{description}</p>
+                    <InlineTextEditor 
+                        value={title} 
+                        tagName="h1"
+                        className={`text-6xl font-bold ${textColor}`}
+                        onSave={(newVal) => id && updateBlock(id, { title: newVal })}
+                    />
+                    <InlineTextEditor 
+                        value={description} 
+                        tagName="p"
+                        className={`text-2xl ${textColor}`}
+                        onSave={(newVal) => id && updateBlock(id, { description: newVal })}
+                    />
                 </div>
             </div>
         </div>

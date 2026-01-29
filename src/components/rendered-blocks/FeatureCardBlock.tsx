@@ -1,3 +1,6 @@
+import { usePageStore } from "../../store/usePageStore";
+import { InlineTextEditor } from "../reusable-components/InlineTextEditor";
+
 type FeatureItem = {
   title: string;
   description: string;
@@ -13,6 +16,7 @@ type FeatureCardProps = {
   imageUrl?: string;
   linkUrl?: string;
   linkText?: string;
+  id?: string;
 };
 
 export function FeatureCardBlock({
@@ -22,7 +26,9 @@ export function FeatureCardBlock({
   imageUrl,
   linkUrl,
   linkText,
+  id,
 }: FeatureCardProps) {
+  const updateBlock = usePageStore((s) => s.updateBlock);
   const derivedFeatures: FeatureItem[] =
     features && features.length > 0
       ? features
@@ -37,6 +43,13 @@ export function FeatureCardBlock({
             linkText: linkText || "Learn more",
           },
         ];
+
+  const handleUpdateFeature = (index: number, updates: Partial<FeatureItem>) => {
+    if (!id) return;
+    const newFeatures = [...derivedFeatures];
+    newFeatures[index] = { ...newFeatures[index], ...updates };
+    updateBlock(id, { features: newFeatures });
+  };
 
   return (
     <div className="w-full bg-white">
@@ -63,14 +76,25 @@ export function FeatureCardBlock({
                 />
               )}
               <div className="p-5 flex flex-col gap-3 flex-1">
-                <h3 className="text-xl font-bold">{feature.title}</h3>
-                <p className="text-gray-600 flex-1">{feature.description}</p>
-                <a
-                  href={feature.linkUrl}
-                  className="text-blue-500 hover:text-blue-700 font-medium"
-                >
-                  {feature.linkText || "Learn more"}
-                </a>
+                <InlineTextEditor
+                  value={feature.title}
+                  tagName="h3"
+                  className="text-xl font-bold"
+                  onSave={(newVal) => handleUpdateFeature(index, { title: newVal })}
+                />
+                <InlineTextEditor
+                  value={feature.description}
+                  tagName="p"
+                  className="text-gray-600 flex-1"
+                  onSave={(newVal) => handleUpdateFeature(index, { description: newVal })}
+                />
+                <div className="text-blue-500 hover:text-blue-700 font-medium">
+                  <InlineTextEditor
+                    value={feature.linkText || "Learn more"}
+                    tagName="span"
+                    onSave={(newVal) => handleUpdateFeature(index, { linkText: newVal })}
+                  />
+                </div>
               </div>
             </div>
           ))}

@@ -1,6 +1,4 @@
 import { usePageStore } from "../../../store/usePageStore";
-import { TextField } from "../../reusable-components/TextField";
-import { TextAreaField } from "../../reusable-components/TextAreaField";
 import { ImagePresetSelector } from "../../reusable-components/ImagePresetSelector";
 import { FileUploadField } from "../../reusable-components/FileUploadField";
 import { compressImage } from "../../../utils/imageCompression";
@@ -57,24 +55,6 @@ export function ContentTab({ block }: ContentTabProps) {
 
   return (
     <div className="space-y-4" id="content-panel" role="tabpanel" aria-labelledby="content-tab">
-      <TextField
-        id="hero-title-input"
-        label="Title"
-        value={block.props.title || ""}
-        onChange={(value) => updateBlock(block.id, { title: value })}
-        placeholder="Enter hero title..."
-        description="Enter the hero section title"
-      />
-
-      <TextAreaField
-        id="hero-description-input"
-        label="Description"
-        value={block.props.description || ""}
-        onChange={(value) => updateBlock(block.id, { description: value })}
-        placeholder="Enter hero description..."
-        description="Enter the hero section description"
-      />
-
       <ImagePresetSelector
         presets={backgroundImages}
         selected={block.props.bgImage || ""}

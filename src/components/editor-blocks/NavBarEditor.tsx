@@ -69,16 +69,6 @@ export function NavBarEditor({ block }: { block: any }) {
             
             <div className="flex gap-2 items-start">
               <div className="flex-1">
-                <TextField
-                  id={`link-${index}-name`}
-                  label="Name"
-                  value={link.label}
-                  onChange={(value) => updateLink(index, "label", value)}
-                  placeholder="Link name..."
-                />
-              </div>
-              
-              <div className="flex-1">
                 <label htmlFor={`link-${index}-section`} className="block text-sm font-medium text-gray-700 mb-2">
                   Section
                 </label>
